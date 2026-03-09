@@ -1,6 +1,6 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus } from '../../../shared/types.js';
+import { CustomError ,ErrorStatus } from 'shared/types.js';
 
 
 const router = express.Router();
