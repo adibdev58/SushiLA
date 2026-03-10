@@ -1,6 +1,9 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { CustomError ,ErrorStatus } from 'shared/types.js';
+import * as zod from "zod";
+import { validateZodScheme } from '../../utils/validateZodScheme.js';
+import { getTimeStampNowLocal } from "../../utils/getTimeStampNowLocal.js";
 
 
 const router = express.Router();
@@ -52,34 +55,46 @@ async function db() {
     }
 }
 
+
+
 //error-management completed
 router.post("/", async (req, res, next)=> {
     try {
-        const {name, description, weight, price, discount_price, is_available} = req.body;
-
-        const zod = await import("zod");
 
         const Products = zod.object({
           name: zod.string().trim().min(1).max(99),
+          imgUrls: zod.array(
+            zod.object({ id: zod.int().nonnegative(), url: zod.string().trim().min(1).max(1000) }),
+          ),
           description: zod.string().trim().min(1).max(2000),
+          ingredients: zod.array(zod.string().trim().min(1).max(50)),
           weight: zod.int().min(1).max(9999),
           price: zod.float32().min(0).max(999.999),
-          discount_price: zod.float32().min(0).max(999.999),
-          is_available: zod.boolean()
-        });
-          
-        const parsedBody = Products.safeParse(req.body);
+          discountPrice: zod.float32().min(0).max(999.999),
+          is_available: zod.boolean(),
+          specialFeatures: zod.array(
+            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
+          ),
+          categories: zod.array(
+            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
+          ),
+        }).transform(
+            (val)=> {
+                return {
+                    creationDate: getTimeStampNowLocal(),
+                    ...val
+                }
+            }
+        );
 
-        if(!parsedBody.success) {
-            throw new CustomError(ErrorStatus.ValidationError, `Request body couldn't be parsed cause it does not match the schema! ${parsedBody.error.message}`, 400)
-        }
-        //const db_response = await insert();
-        res.status(500).json({response: parsedBody.success})
+        const parsedBody = validateZodScheme(Products,req.body);
+  
+        res.status(201).json({response: parsedBody})
     } catch(err) {
         if(err instanceof CustomError) {
             next(err)
         } else {
-            next(new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB!`, 500))
+            next(new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB! ${err}`, 500))
         }
     }
     
