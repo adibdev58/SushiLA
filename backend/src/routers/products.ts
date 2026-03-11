@@ -1,6 +1,6 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus } from 'shared/types.js';
+import { CustomError ,ErrorStatus, ProductScheme, type Product } from 'shared/types.js';
 import * as zod from "zod";
 import { validateZodScheme } from '../../utils/validateZodScheme.js';
 import { getTimeStampNowLocal } from "../../utils/getTimeStampNowLocal.js";
@@ -36,11 +36,18 @@ async function db() {
 }
 
 //error-management completed
- async function insert(data?: any) {
+ async function insert(dataToInsert: Product) {
     try {
         const database = await db();
-        const {data, error} = await database.from('products')
-        .insert({})
+        const {data, error} = await database.rpc("insert_product_atomic", {
+            creation_date: dataToInsert.creationDate, 
+            description: dataToInsert.description, 
+            discount_price: dataToInsert.price, 
+            is_available: dataToInsert.is_available, 
+            name:dataToInsert.name, 
+            price: dataToInsert.price, 
+            weight: dataToInsert.weight
+        });
         if(error) {
             const errorMessage = error.message;
             throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage}`,500)
@@ -60,35 +67,8 @@ async function db() {
 //error-management completed
 router.post("/", async (req, res, next)=> {
     try {
-
-        const Products = zod.object({
-          name: zod.string().trim().min(1).max(99),
-          imgUrls: zod.array(
-            zod.object({ id: zod.int().nonnegative(), url: zod.string().trim().min(1).max(1000) }),
-          ),
-          description: zod.string().trim().min(1).max(2000),
-          ingredients: zod.array(zod.string().trim().min(1).max(50)),
-          weight: zod.int().min(1).max(9999),
-          price: zod.float32().min(0).max(999.999),
-          discountPrice: zod.float32().min(0).max(999.999),
-          is_available: zod.boolean(),
-          specialFeatures: zod.array(
-            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
-          ),
-          categories: zod.array(
-            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
-          ),
-        }).transform(
-            (val)=> {
-                return {
-                    creationDate: getTimeStampNowLocal(),
-                    ...val
-                }
-            }
-        );
-
-        const parsedBody = validateZodScheme(Products,req.body);
-  
+        const parsedBody = validateZodScheme(ProductScheme,req.body);
+        await insert(parsedBody);
         res.status(201).json({response: parsedBody})
     } catch(err) {
         if(err instanceof CustomError) {
