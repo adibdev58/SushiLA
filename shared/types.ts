@@ -34,22 +34,22 @@ export class CustomErrorObject {
     }
 }
 
-export const ProductScheme = zod.object({
+export const ProductPostSchema = zod.object({
           name: zod.string().trim().min(1).max(99),
           imgUrls: zod.array(
-            zod.object({ id: zod.int().nonnegative(), url: zod.string().trim().min(1).max(1000) }),
+            zod.object({url: zod.string().trim().min(1).max(1000) }),
           ),
           description: zod.string().trim().min(1).max(2000),
-          ingredients: zod.array(zod.string().trim().min(1).max(50)),
+          ingredients: zod.array(zod.object({name: zod.string().trim().min(1).max(1000) })),
           weight: zod.int().min(1).max(9999),
           price: zod.float32().min(0).max(999.999),
           discountPrice: zod.float32().min(0).max(999.999),
-          is_available: zod.boolean(),
+          isAvailable: zod.boolean(),
           specialFeatures: zod.array(
-            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
+            zod.object({ id: zod.int().nonnegative()}),
           ),
           categories: zod.array(
-            zod.object({ id: zod.int().nonnegative(), name: zod.string().trim().min(1).max(1000) }),
+            zod.object({ id: zod.int().nonnegative()}),
           ),
         }).transform(
             (val)=> {
@@ -60,4 +60,4 @@ export const ProductScheme = zod.object({
             }
         );
 
-export type Product = zod.infer<typeof ProductScheme>;
+export type ProductPost = zod.infer<typeof ProductPostSchema>;

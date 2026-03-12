@@ -1,6 +1,6 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus, ProductScheme, type Product } from 'shared/types.js';
+import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from 'shared/types.js';
 import * as zod from "zod";
 import { validateZodScheme } from '../../utils/validateZodScheme.js';
 import { getTimeStampNowLocal } from "../../utils/getTimeStampNowLocal.js";
@@ -36,21 +36,26 @@ async function db() {
 }
 
 //error-management completed
- async function insert(dataToInsert: Product) {
+ async function insert(dataToInsert: ProductPost) {
     try {
         const database = await db();
         const {data, error} = await database.rpc("insert_product_atomic", {
-            creation_date: dataToInsert.creationDate, 
-            description: dataToInsert.description, 
-            discount_price: dataToInsert.price, 
-            is_available: dataToInsert.is_available, 
-            name:dataToInsert.name, 
-            price: dataToInsert.price, 
-            weight: dataToInsert.weight
+            creationdate: dataToInsert.creationDate, 
+            name:dataToInsert.name,
+            imgurls:dataToInsert.imgUrls,
+            description: dataToInsert.description,
+            ingredients: dataToInsert.ingredients,
+            weight: dataToInsert.weight,
+            price: dataToInsert.price,
+            discountprice: dataToInsert.price,
+            isavailable: dataToInsert.isAvailable,
+            specialfeatures: dataToInsert.specialFeatures,
+            categories: dataToInsert.categories
         });
         if(error) {
             const errorMessage = error.message;
-            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage}`,500)
+            const errorDetails = error.details;
+            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage} ${errorDetails}`,500)
         }
     return {data}
     } catch(err) {
@@ -67,7 +72,7 @@ async function db() {
 //error-management completed
 router.post("/", async (req, res, next)=> {
     try {
-        const parsedBody = validateZodScheme(ProductScheme,req.body);
+        const parsedBody = validateZodScheme(ProductPostSchema,req.body);
         await insert(parsedBody);
         res.status(201).json({response: parsedBody})
     } catch(err) {
