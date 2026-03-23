@@ -1,9 +1,9 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from 'shared/types.js';
+import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from 'shared/dist/types.js';
 import * as zod from "zod";
-import { validateZodScheme } from '../../utils/validateZodScheme.js';
-import { getTimeStampNowLocal } from "../../utils/getTimeStampNowLocal.js";
+import { validateZodScheme } from '../utils/validateZodScheme.js';
+import { getTimeStampNowLocal } from "../utils/getTimeStampNowLocal.js";
 
 
 const router = express.Router();
@@ -55,7 +55,8 @@ async function db() {
         if(error) {
             const errorMessage = error.message;
             const errorDetails = error.details;
-            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage} ${errorDetails}`,500)
+            const errorCause = error.cause;
+            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage} ${errorDetails} ${errorCause}`,500)
         }
     return {data}
     } catch(err) {
@@ -67,19 +68,16 @@ async function db() {
     }
 }
 
-
-
-//error-management completed
+//completed
 router.post("/", async (req, res, next)=> {
     try {
         const parsedBody = validateZodScheme(ProductPostSchema,req.body);
-        await insert(parsedBody);
-        res.status(201).json({response: parsedBody})
+        res.status(201).json({response: await insert(parsedBody)})
     } catch(err) {
         if(err instanceof CustomError) {
             next(err)
         } else {
-            next(new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB! ${err}`, 500))
+            next(new CustomError(ErrorStatus.ServerError, `Something went wrong with POST-operation! ${err}`, 500))
         }
     }
     

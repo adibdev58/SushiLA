@@ -1,4 +1,4 @@
-import { getTimeStampNowLocal } from '../backend/utils/getTimeStampNowLocal.js';
+import { getTimeStampNowLocal } from 'backend/dist/utils/getTimeStampNowLocal.js';
 import * as zod from "zod";
 
 export enum ErrorStatus {
