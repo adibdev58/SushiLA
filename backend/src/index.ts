@@ -33,6 +33,8 @@ const globalErrorHandler:ErrorRequestHandler = (err, req, res, next) => {
     )
 };
 
+
+
 app.use(globalErrorHandler)
 
 const server = app.listen(port, ()=> {

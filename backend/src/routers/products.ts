@@ -56,7 +56,7 @@ async function db() {
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage} ${errorDetails} ${errorCause}`,500)
+            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
         }
     return {data}
     } catch(err) {

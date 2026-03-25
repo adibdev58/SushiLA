@@ -55,7 +55,7 @@ export const ProductPostSchema = zod.object({
             (val)=> {
                 return {
                     creationDate: getTimeStampNowLocal(),
-                    ...val
+                  ...val
                 }
             }
         );
