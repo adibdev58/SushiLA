@@ -1,10 +1,7 @@
 import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from 'shared/dist/types.js';
-import * as zod from "zod";
+import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from 'shared/src/types.js';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
-import { getTimeStampNowLocal } from "../utils/getTimeStampNowLocal.js";
-
 
 const router = express.Router();
 

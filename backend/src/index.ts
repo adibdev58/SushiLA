@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "node:path";
 
 import {rootRouterV1} from "./routers/index.js";
-import {CustomError, ErrorStatus} from "shared/dist/types.js"
+import {CustomError, ErrorStatus} from "shared/src/types.js"
 import { time, timeStamp } from "node:console";
 
 process.chdir(path.resolve(import.meta.dirname, ".."))
