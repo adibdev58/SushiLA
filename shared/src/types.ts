@@ -1,4 +1,4 @@
-import { getTimeStampNowLocal } from 'backend/dist/utils/getTimeStampNowLocal.js';
+import { getTimeStampNowUtcIso } from 'backend/src/utils/getTimeStampNowUtcIso.js';
 import * as zod from "zod";
 
 export enum ErrorStatus {
@@ -17,7 +17,7 @@ export class CustomError {
     readonly status;
     readonly message;
     readonly statusCode?;
-    readonly timeStamp = getTimeStampNowLocal();
+    readonly timeStamp = getTimeStampNowUtcIso();
 
     constructor(status: ErrorStatus, message: string, statusCode?:number) {
         this.status = status;
@@ -54,7 +54,7 @@ export const ProductPostSchema = zod.object({
         }).transform(
             (val)=> {
                 return {
-                    creationDate: getTimeStampNowLocal(),
+                    creationDate: getTimeStampNowUtcIso(),
                   ...val
                 }
             }
