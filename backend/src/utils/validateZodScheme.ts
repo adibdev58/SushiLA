@@ -1,5 +1,5 @@
 import * as zod from "zod";
-import { CustomError ,ErrorStatus } from 'shared/src/types.js';
+import { CustomError ,ErrorStatus } from '@sushila/shared';
 
 export function validateZodScheme<T>(schema: zod.ZodType<T>, data: unknown):T {
     const result = schema.safeParse(data);

@@ -1,11 +1,12 @@
 {
   "name": "backend",
+  "exports": "./src/*",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx tsx watch ./src/index.ts",
+    "dev": "npx tsx watch  --conditions=tsx ./src/index.ts",
     "build": "npx tsc"
   },
   "keywords": [],
@@ -25,7 +26,7 @@
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "shared": "*",
+    "@sushila/shared": "*",
     "zod": "^4.3.6"
   }
 }

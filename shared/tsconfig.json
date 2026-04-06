@@ -4,10 +4,6 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-    "paths": {
-      "backend" : ["../backend/src/utils/*"]
-    },
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
@@ -43,5 +39,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
+    "composite": true
   }
+  
 }

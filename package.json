@@ -4,11 +4,11 @@
   "description": "A full-stack e-commerce website for a sushi store. Built with the PERN stack (PostgreSQL, Express.js, React, Node.js).",
   "main": "index.js",
   "scripts": {
-    "dev-backend": "npm run build-shared && cd backend && npx tsx watch --tsconfig ./tsconfig.json ./src/index.ts",
-    "build-backend": "npm run build-shared && cd backend && npx tsc",
+    "dev-backend": "cd backend && npm run dev",
+    "build-backend": "npm run build-shared && cd backend && npm run build",
     "start-backend": "cd backend && node ./dist/index.js",
     "prod-start-backend": "npm run build-backend && npm run start-backend",
-    "build-shared": "cd shared && npx tsc"
+    "build-shared": "cd shared && npm run build"
   },
   "repository": {
     "type": "git",

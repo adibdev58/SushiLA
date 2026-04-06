@@ -1,15 +1,24 @@
 {
-  "name": "shared",
+  "name": "@sushila/shared",
+  "exports": {
+    ".":{
+      "tsx": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+    },
+  
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npx tsc"
   },
-  "devDependencies": {},
+  "devDependencies": {
+
+  },
   "dependencies": {
     "backend": "*"
   }

@@ -1,4 +1,4 @@
-import { getTimeStampNowUtcIso } from 'backend/src/utils/getTimeStampNowUtcIso.js';
+import { getTimeStampNowUtcIso } from '@sushila/shared';
 import * as zod from "zod";
 
 export enum ErrorStatus {
