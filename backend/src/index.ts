@@ -9,7 +9,6 @@ import { time, timeStamp } from "node:console";
 process.chdir(path.resolve(import.meta.dirname, ".."))
 dotenv.config();
 const app = express();
-console.log(`Cwd ${process.cwd()}`)
 const port = process.env.PORT;
 
 app.use("/api/v1", rootRouterV1);
