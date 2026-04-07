@@ -59,5 +59,10 @@ export const ProductPostSchema = zod.object({
                 }
             }
         );
-
 export type ProductPost = zod.infer<typeof ProductPostSchema>;
+
+export const CategoriesSchema = zod.object({
+    name: zod.string().trim().min(1).max(99)
+});
+
+export type CategoriesPost = zod.infer<typeof CategoriesSchema>;
