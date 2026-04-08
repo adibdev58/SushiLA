@@ -29,5 +29,8 @@
   ],
   "devDependencies": {
     "tsconfig-paths": "^4.2.0"
+  },
+  "dependencies": {
+    "lowercase-keys": "^4.0.1"
   }
 }

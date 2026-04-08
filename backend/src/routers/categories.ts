@@ -1,12 +1,13 @@
 import {Router} from "express"
-import { CustomError ,ErrorStatus, CategoriesSchema, type CategoriesPost } from '@sushila/shared';
- 
+import { CustomError ,ErrorStatus, CategorySchema, type CategoryPost } from '@sushila/shared';
+import {insert} from "../utils/db.js"
+
 const router = Router();
 
-router.post("/", (req,res,next)=> {
+router.post("/", async (req,res,next)=> {
     try {
-        const parsedBody = CategoriesSchema.parse(req.body);
-        res.json(parsedBody)
+        const parsedBody: CategoryPost = CategorySchema.parse(req.body);
+        res.status(201).json(await insert(parsedBody))
     } catch(err) {
         if( err instanceof CustomError) {
             throw err

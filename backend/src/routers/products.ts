@@ -2,6 +2,7 @@ import express from "express"
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
+import {insert} from "../utils/db.js"
 
 const router = express.Router();
 
@@ -32,8 +33,9 @@ async function db() {
     } 
 }
 
+
 //error-management completed
- async function insert(dataToInsert: ProductPost) {
+/*  async function insert(dataToInsert: ProductPost) {
     try {
         const database = await db();
         const {data, error} = await database.rpc("insert_product_atomic", {
@@ -49,6 +51,7 @@ async function db() {
             specialfeatures: dataToInsert.specialFeatures,
             categories: dataToInsert.categories
         });
+
         if(error) {
             const errorMessage = error.message;
             const errorDetails = error.details;
@@ -63,12 +66,12 @@ async function db() {
             throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,500)
         }
     }
-}
+} */
 
 //completed
 router.post("/", async (req, res, next)=> {
     try {
-        const parsedBody = validateZodScheme(ProductPostSchema,req.body);
+        const parsedBody: ProductPost = validateZodScheme(ProductPostSchema,req.body);
         res.status(201).json({response: await insert(parsedBody)})
     } catch(err) {
         if(err instanceof CustomError) {

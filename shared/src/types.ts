@@ -11,8 +11,6 @@ export enum ErrorStatus {
     NotFoundInEnv = "NotFoundInEnv",
     ValidationError="ValidationError"
 }
-
-
 export class CustomError {
     readonly status;
     readonly message;
@@ -61,8 +59,8 @@ export const ProductPostSchema = zod.object({
         );
 export type ProductPost = zod.infer<typeof ProductPostSchema>;
 
-export const CategoriesSchema = zod.object({
+export const CategorySchema = zod.object({
     name: zod.string().trim().min(1).max(99)
 });
 
-export type CategoriesPost = zod.infer<typeof CategoriesSchema>;
+export type CategoryPost = zod.infer<typeof CategorySchema>;
