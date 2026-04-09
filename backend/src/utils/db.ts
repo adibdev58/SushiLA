@@ -1,4 +1,4 @@
-import {type ProductPost, type CategoryPost, CustomError, ErrorStatus, ProductPostSchema} from "@sushila/shared"
+import {type ProductPost, type CategoryPost, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
 
@@ -17,16 +17,11 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Couldn't connect to the database! Check the correctness of the variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
-
- async function insert(dataToInsert: ProductPost | CategoryPost) {
+ async function insert(dataToInsert: ProductPost | CategoryPost, storedProcedureName: StoredProcedureName) {
     try {
-     
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
-
-        //Todo
-        //Check for Type and run the suitable stored procedure in supabaset 
-        const {data, error} = await database.rpc("insert_product_atomic", 
+        const {data, error} = await database.rpc(storedProcedureName, 
             data_keysToLowerCase
         );
 

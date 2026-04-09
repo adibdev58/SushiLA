@@ -64,3 +64,8 @@ export const CategorySchema = zod.object({
 });
 
 export type CategoryPost = zod.infer<typeof CategorySchema>;
+
+export enum StoredProcedureName {
+    insert_product_atomic = "insert_product_atomic",
+    insert_category = "insert_category"
+}
