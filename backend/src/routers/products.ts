@@ -16,23 +16,6 @@ router.get("/", (req, res)=> {
     )
 })
 
-//error-management completed
-async function db() {
-    const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
-
-    if(!supabaseUrl || !supabaseKey) { 
-        throw new CustomError(ErrorStatus.NotFoundInEnv, `Supabase variables are missing in the .env!`,500)
-    }
- 
-    try{
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        return supabase;
-    } catch (err) {
-        throw new CustomError(ErrorStatus.DatabaseError, `Couldn't connect to the database! Check the correctness of the variables in the .env file. ${JSON.stringify(err)}`,500)
-    } 
-}
-
 //completed
 router.post("/", async (req, res, next)=> {
     try {
