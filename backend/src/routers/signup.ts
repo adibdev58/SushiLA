@@ -1,23 +1,20 @@
 import {Router} from "express"
 import * as zod from "zod"
-import {CustomError, ErrorStatus} from "@sushila/shared"
+import {CustomError, ErrorStatus, SignupPostSchema, type SignupPost, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
+import { insert } from "../utils/db.js";
 
 const router = Router();
 
 
-const SignupPostSchema = zod.object({
-    forename: zod.string().trim().min(1).max(99),
-    lastname: zod.string().trim().min(1).max(99),
-    email: zod.email().trim().min(1).max(99),
-    password: zod.string().min(8).regex(/[a-z]/).regex(/[A-Z]/).regex(/[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@\[\]\^_`{\|}~]/).regex(/[0-9]/)
-})
 
-
-router.post("/", (req, res, next)=> {
+//Todo: Andere procedure funktionen in supabase refactoren, sodass sie die eingefügten Daten zurücksenden. (ps: keien Passwörter zurücksenden!)
+//Todo: Passwort erst hashen und in den Datenbank einfügen
+router.post("/", async (req, res, next)=> {
     try {
-        const parsedData = validateZodScheme(SignupPostSchema,req.body);
-        res.json(parsedData)
+        const parsedData: SignupPost = validateZodScheme(SignupPostSchema,req.body);
+        const result = await insert(parsedData,StoredProcedureName.insert_user);
+        res.status(201).json(result);
     } catch (err) {
         if(err instanceof CustomError) {
             throw err

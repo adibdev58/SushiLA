@@ -1,4 +1,4 @@
-import {type ProductPost, type CategoryPost, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
+import {type ProductPost, type CategoryPost, type SignupPost, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
 
@@ -17,11 +17,11 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Couldn't connect to the database! Check the correctness of the variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
- async function insert(dataToInsert: ProductPost | CategoryPost, storedProcedureName: StoredProcedureName) {
+ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName) {
     try {
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
-        const {data, error} = await database.rpc(storedProcedureName, 
+        const {data, error, status} = await database.rpc(storedProcedureName, 
             data_keysToLowerCase
         );
 
@@ -31,7 +31,8 @@ async function db() {
             const errorCause = error.cause;
             throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
         }
-    return {data}
+        
+    return {data,status}
     } catch(err) {
         if(err instanceof CustomError) {
             throw err;

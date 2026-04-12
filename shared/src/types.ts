@@ -67,5 +67,27 @@ export type CategoryPost = zod.infer<typeof CategorySchema>;
 
 export enum StoredProcedureName {
     insert_product_atomic = "insert_product_atomic",
-    insert_category = "insert_category"
+    insert_category = "insert_category",
+    insert_user = "insert_user"
 }
+
+export const SignupPostSchema = zod.object({
+    forename: zod.string().trim().min(1).max(99),
+    lastname: zod.string().trim().min(1).max(99),
+    email: zod.email().trim().min(1).max(99),
+    password: zod.string().min(
+        8,
+        "Your password must be at least eight characters long!"
+    ).regex(/[a-z]/).regex(
+        /[A-Z]/,
+        "Your password should contain at least one capital letter!"
+    ).regex(
+        /[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@\[\]\^_`{\|}~]/,
+        "Your password must contain at least one special character!"
+    ).regex(
+        /[0-9]/,
+        "Your password must contain at least one digit number!"
+    )
+})
+
+export type SignupPost = zod.infer<typeof SignupPostSchema>
