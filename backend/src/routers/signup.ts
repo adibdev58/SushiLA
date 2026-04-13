@@ -7,12 +7,12 @@ import { insert } from "../utils/db.js";
 const router = Router();
 
 
-
-//Todo: Andere procedure funktionen in supabase refactoren, sodass sie die eingefügten Daten zurücksenden. (ps: keien Passwörter zurücksenden!)
-//Todo: Passwort erst hashen und in den Datenbank einfügen
 router.post("/", async (req, res, next)=> {
     try {
-        const parsedData: SignupPost = validateZodScheme(SignupPostSchema,req.body);
+        //Todo
+        //Erstmal kontrollieren ob der User schon registriert ist
+        //unter utils->db->userIsRegistered
+        const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
         const result = await insert(parsedData,StoredProcedureName.insert_user);
         res.status(201).json(result);
     } catch (err) {

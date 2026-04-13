@@ -19,7 +19,7 @@ router.get("/", (req, res)=> {
 //completed
 router.post("/", async (req, res, next)=> {
     try {
-        const parsedBody: ProductPost = validateZodScheme(ProductPostSchema,req.body);
+        const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
         res.status(201).json({response: await insert(parsedBody, StoredProcedureName.insert_product_atomic)})
     } catch(err) {
         if(err instanceof CustomError) {

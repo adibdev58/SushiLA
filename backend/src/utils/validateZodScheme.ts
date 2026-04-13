@@ -1,8 +1,8 @@
 import * as zod from "zod";
 import { CustomError ,ErrorStatus } from '@sushila/shared';
 
-export function validateZodScheme<T>(schema: zod.ZodType<T>, data: unknown):T {
-    const result = schema.safeParse(data);
+export async function validateZodScheme<T>(schema: zod.ZodType<T>, data: unknown):Promise<T> {
+    const result = await schema.safeParseAsync(data);
     if(!result.success) {
         let errMessages = ""
         result.error.issues.forEach((errObj)=> {
