@@ -17,7 +17,7 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Couldn't connect to the database! Check the correctness of the variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
- async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName) {
+async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName) {
     try {
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
@@ -41,5 +41,4 @@ async function db() {
         }
     }
 }
-
 export {insert}
