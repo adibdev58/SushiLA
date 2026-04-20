@@ -41,4 +41,26 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
         }
     }
 }
-export {insert}
+
+async function queryUser(email: string) {
+    try {
+        const database = await db();
+        const {data, error, status} = await database.from("users").select("*").eq("email",email)
+
+        if(error) {
+            const errorMessage = error.message;
+            const errorDetails = error.details;
+            const errorCause = error.cause;
+            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB query! User does not exist! ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
+        }
+        
+    return {data,status}
+    } catch(err) {
+        if(err instanceof CustomError) {
+            throw err;
+        } else {
+            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,500)
+        }
+    }
+}
+export {insert,queryUser}

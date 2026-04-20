@@ -5,6 +5,7 @@ import {CategorySchema,type CategoryPost} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js"
 import {StoredProcedureName} from "./types.js"
 import {SignupPostSchema, type SignupPost} from "./types.js"
+import {LoginPostSchema, type LoginPost}  from "./types.js"
 import {hash} from "./hash.js"
 
 export {ErrorStatus,CustomError,CustomErrorObject}
@@ -13,4 +14,5 @@ export {CategorySchema,type CategoryPost}
 export {getTimeStampNowUtcIso}
 export {StoredProcedureName}
 export {SignupPostSchema, type SignupPost}
+export {LoginPostSchema, type LoginPost}
 export {hash}

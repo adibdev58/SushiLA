@@ -96,3 +96,11 @@ export const SignupPostSchema = zod.object({
 })
 
 export type SignupPost = zod.infer<typeof SignupPostSchema>
+
+export const LoginPostSchema = zod.object({
+    email: zod.email().trim().toLowerCase(),
+    password: zod.string()
+})
+
+
+export type LoginPost = zod.infer<typeof LoginPostSchema>
