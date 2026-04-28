@@ -42,10 +42,22 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
     }
 }
 
-async function queryUser(email: string) {
+
+type UserInDB = {
+    "id": number,
+    "forename": string,
+    "lastname": string,
+    "email": string,
+    "password": string
+}
+
+async function queryUser(email: string):Promise<{
+    data: UserInDB,
+    status: number
+}> {
     try {
         const database = await db();
-        const {data, error, status} = await database.from("users").select("*").eq("email",email)
+        const {data, error, status} = await database.from("users").select("*").eq("email",email).single();
 
         if(error) {
             const errorMessage = error.message;
