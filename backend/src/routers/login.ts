@@ -8,6 +8,11 @@ import * as bcrypt from "bcrypt"
 const router = Router();
 
 
+declare module "express-session" {
+    interface SessionData {
+        name: string
+    }
+}
 
 //Todo Login implementieren!
 router.post("/", async (req, res, next)=> {
@@ -18,12 +23,15 @@ router.post("/", async (req, res, next)=> {
         const plainPassword = password;
         const hashedPassword  = userQuery.data.password;
     
-        const passwordIsCorrect = await bcrypt.compare(plainPassword, hashedPassword);
         const userQueryWasSuccessful = userQuery.status === 200;
+        const passwordIsCorrect = await bcrypt.compare(plainPassword, hashedPassword);
     
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Password or Email is wrong!`, 401);
-
+        console.log(req.session.id)
+        console.log(req.session.name)
+        
         res.json({...userQuery, passwordIsCorrect})
+
     } catch (err) {
         if(err instanceof CustomError) next(err);
         else throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB-Get-Query!`,500)

@@ -29,11 +29,13 @@
   ],
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/express-session": "^1.19.0",
     "tsconfig-paths": "^4.2.0"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "connect-pg-simple": "^10.0.0",
     "express-session": "^1.19.0",
     "lowercase-keys": "^4.0.1"
   }
