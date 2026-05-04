@@ -42,7 +42,7 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
     }
 }
 
-
+//delete
 type UserInDB = {
     "id": number,
     "forename": string,

@@ -9,9 +9,6 @@ const router = Router();
 
 router.post("/", async (req, res, next)=> {
     try {
-        //Todo
-        //Erstmal kontrollieren ob der User schon registriert ist
-        //unter utils->db->userIsRegistered
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
         const result = await insert(parsedData,StoredProcedureName.insert_user);
         res.status(201).json(result);
