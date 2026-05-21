@@ -9,7 +9,8 @@ import loginRouter from "./login.js"
 import {createSession} from "../middleware/index.js"
 
 const rootRouterV1 = express.Router();
-rootRouterV1.use(createSession)
+
+rootRouterV1.use(createSession())
 
 rootRouterV1.use(express.json())
 rootRouterV1.use("/admin", adminRouter);

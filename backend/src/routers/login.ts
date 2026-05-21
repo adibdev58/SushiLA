@@ -10,7 +10,8 @@ const router = Router();
 
 declare module "express-session" {
     interface SessionData {
-        name: string
+        name: string,
+        initialized: boolean
     }
 }
 
@@ -28,13 +29,20 @@ router.post("/", async (req, res, next)=> {
     
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Password or Email is wrong!`, 401);
         console.log(req.session.id)
-        console.log(req.session.name)
+
+       
+        req.session.initialized = !req.session.initialized;
+       
+        console.log(req.session.initialized)
         
         res.json({...userQuery, passwordIsCorrect})
 
     } catch (err) {
         if(err instanceof CustomError) next(err);
-        else throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB-Get-Query!`,500)
+        else {
+            const err2 = new CustomError(ErrorStatus.DatabaseError, `Something went wrong with login process! DB-Get-Query error!`,500);
+            next(err2)
+        }
     }
 })
 
