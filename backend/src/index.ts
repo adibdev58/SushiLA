@@ -19,7 +19,7 @@ app.use("", (req, res, next) => {
 const globalErrorHandler:ErrorRequestHandler = (err, req, res, next) => {
     const {statusCode, status, message, timeStamp}:CustomError = err;
     if(!statusCode || !status || !message || !timeStamp) {
-        throw new Error(`Exeption occured in globalErrorHandler! Some data was missing! statusCode: ${statusCode}, status: ${status}, message: ${message}, timeStamp: ${timeStamp}`)
+        throw new Error(`Exeption occured in globalErrorHandler! Some data was missing! statusCode: ${statusCode}, status: ${status}, message: ${message}, timeStamp: ${timeStamp} ${err}`)
     }
     res.status(statusCode);
     res.json(

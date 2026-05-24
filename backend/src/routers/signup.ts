@@ -20,8 +20,6 @@ router.post("/", async (req, res, next)=> {
             throw new CustomError(ErrorStatus.ServerError, `Something went wrong with POST-operation! ${err}`,500)
         }
     }
-
-    
 })
 
 export default router;

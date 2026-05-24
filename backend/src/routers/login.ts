@@ -4,9 +4,7 @@ import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { queryUser } from "../utils/db.js";
 import * as bcrypt from "bcrypt"
 
-
 const router = Router();
-
 
 declare module "express-session" {
     interface SessionData {
@@ -29,7 +27,6 @@ router.post("/", async (req, res, next)=> {
     
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Password or Email is wrong!`, 401);
         console.log(req.session.id)
-
        
         req.session.initialized = !req.session.initialized;
        
