@@ -8,14 +8,18 @@ const router = Router();
 
 declare module "express-session" {
     interface SessionData {
-        name: string,
-        initialized: boolean
+        email: string
     }
 }
 
 //Todo Login implementieren!
 router.post("/", async (req, res, next)=> {
     try {
+        //when user is already loged in
+        if(req.session.email) {
+            return res.json({logedIn: true})
+        }
+
         const parsedData = await validateZodScheme(LoginPostSchema,req.body);
         const {email, password} = parsedData;
         const userQuery = await queryUser(email);
@@ -26,13 +30,10 @@ router.post("/", async (req, res, next)=> {
         const passwordIsCorrect = await bcrypt.compare(plainPassword, hashedPassword);
     
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Password or Email is wrong!`, 401);
-        console.log(req.session.id)
-       
-        req.session.initialized = !req.session.initialized;
-       
-        console.log(req.session.initialized)
         
-        res.json({...userQuery, passwordIsCorrect})
+        req.session.email = email;
+        
+        return res.json({...userQuery, passwordIsCorrect})
 
     } catch (err) {
         if(err instanceof CustomError) next(err);

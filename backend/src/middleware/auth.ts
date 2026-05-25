@@ -14,7 +14,7 @@ export const createSession = () => {
     const sessionMiddleware = session({
         secret: secretKey,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         cookie: {
             maxAge: 604800000, //7 days
             httpOnly: true,
