@@ -7,14 +7,14 @@ async function db() {
     const supabaseKey = process.env.PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
 
     if(!supabaseUrl || !supabaseKey) { 
-        throw new CustomError(ErrorStatus.NotFoundInEnv, `Supabase variables are missing in the .env!`,500)
+        throw new CustomError(ErrorStatus.NotFoundInEnv, `Supabase variables are missing in the .env!`, `PUBLIC_SUPABASE_URL or PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY is missing in .env.`,500)
     }
  
     try{
         const supabase = createClient(supabaseUrl, supabaseKey);
         return supabase;
     } catch (err) {
-        throw new CustomError(ErrorStatus.DatabaseError, `Couldn't connect to the database! Check the correctness of the variables in the .env file. ${JSON.stringify(err)}`,500)
+        throw new CustomError(ErrorStatus.DatabaseError, `Invalid environment variables in .env.`,`Failed to connect to the database. Please verify PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
 async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName) {
@@ -29,7 +29,7 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with inserting in DB! ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
+            throw new CustomError(ErrorStatus.DatabaseError, `DB Insert Error`,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}}`,500)
         }
         
     return {data,status}
@@ -37,7 +37,7 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
         if(err instanceof CustomError) {
             throw err;
         } else {
-            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,500)
+            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,`Unexpected error during database insert operation! Raw error: ${err}`,500)
         }
     }
 }
@@ -63,7 +63,7 @@ async function queryUser(email: string):Promise<{
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError, `Something went wrong with DB query! User does not exist! ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
+            throw new CustomError(ErrorStatus.DatabaseError,`User not found!`, `Something went wrong with the DB query! User does not exist. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
         }
         
     return {data,status}
@@ -71,7 +71,7 @@ async function queryUser(email: string):Promise<{
         if(err instanceof CustomError) {
             throw err;
         } else {
-            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,500)
+            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,`Unexpected error during database insert operation! rawError: ${err}`,500)
         }
     }
 }

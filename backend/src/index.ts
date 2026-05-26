@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import path from "node:path";
 
 import {rootRouterV1} from "./routers/index.js";
-import {CustomError, ErrorStatus} from "@sushila/shared"
+import {CustomResponse, CustomError, ErrorStatus} from "@sushila/shared"
 
 
 process.chdir(path.resolve(import.meta.dirname, ".."))
@@ -13,23 +13,19 @@ const port = process.env.PORT;
 
 app.use("/api/v1", rootRouterV1);
 app.use("", (req, res, next) => {
-    next(new CustomError(ErrorStatus.NoRessourceFound,`Ressource couldn't be found!`, 404));
+    next(new CustomError(ErrorStatus.NoRessourceFound,`Resource not found!`, `The requested resource with the provided ID does not exist in the database or the URL endpoint is invalid.`, 404));
 })
 
 const globalErrorHandler:ErrorRequestHandler = (err, req, res, next) => {
-    const {statusCode, status, message, timeStamp}:CustomError = err;
-    if(!statusCode || !status || !message || !timeStamp) {
-        throw new Error(`Exeption occured in globalErrorHandler! Some data was missing! statusCode: ${statusCode}, status: ${status}, message: ${message}, timeStamp: ${timeStamp} ${err}`)
+    const {statusCode, status, messageShort, messageDetailed}:CustomError = err;
+
+    if(!statusCode || !status || !messageShort || !messageDetailed) {
+        throw new Error(`Exeption occured in globalErrorHandler! Some data was missing! statusCode: ${statusCode}, status: ${status}, messageShort: ${messageShort}, messageDetailed: ${messageDetailed}, rawError: ${err}`)
     }
+
     res.status(statusCode);
-    res.json(
-        {
-            statusCode,
-            status,
-            message,
-            timeStamp
-        }
-    )
+    const response = new CustomResponse(false,[],err)
+    res.json(response)
 };
 
 app.use(globalErrorHandler)

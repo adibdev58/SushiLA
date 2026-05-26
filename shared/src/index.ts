@@ -1,5 +1,6 @@
 
-import {ErrorStatus,CustomError,CustomErrorObject} from "./types.js";
+import {ErrorStatus,CustomError} from "./types.js";
+import {CustomResponse} from "./types.js";
 import {ProductPostSchema,type ProductPost} from "./types.js";
 import {CategorySchema,type CategoryPost} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js"
@@ -8,7 +9,8 @@ import {SignupPostSchema, type SignupPost} from "./types.js"
 import {LoginPostSchema, type LoginPost}  from "./types.js"
 import {hash} from "./hash.js"
 
-export {ErrorStatus,CustomError,CustomErrorObject}
+export {ErrorStatus,CustomError}
+export {CustomResponse}
 export {ProductPostSchema,type ProductPost}
 export {CategorySchema,type CategoryPost}
 export {getTimeStampNowUtcIso}

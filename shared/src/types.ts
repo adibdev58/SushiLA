@@ -15,22 +15,32 @@ export enum ErrorStatus {
 }
 export class CustomError {
     readonly status;
-    readonly message;
+    readonly messageShort;
+    readonly messageDetailed;
     readonly statusCode?;
-    readonly timeStamp = getTimeStampNowUtcIso();
 
-    constructor(status: ErrorStatus, message: string, statusCode?:number) {
+    constructor(status: ErrorStatus, messageShort: string, messageDetailed: string, statusCode?:number) {
         this.status = status;
-        this.message = message;
+        this.messageShort = messageShort;
+        this.messageDetailed = messageDetailed;
         if(!statusCode) {
             return
         }
         this.statusCode = statusCode;
     }
 }
-export class CustomErrorObject {
-    constructor(err: CustomError) {
-        Object.assign(this,err);
+
+export class CustomResponse {
+    readonly isSuccess: boolean;
+    readonly data: unknown[] | Record<string,unknown>;
+    readonly error: CustomError;
+    readonly timeStamp: string;
+
+    constructor(isSuccess: boolean, data: unknown[] | Record<string,unknown>, error: CustomError) {
+        this.isSuccess = isSuccess;
+        this.data = data;
+        this.error = error;
+        this.timeStamp = getTimeStampNowUtcIso();
     }
 }
 
@@ -101,6 +111,5 @@ export const LoginPostSchema = zod.object({
     email: zod.email().trim().toLowerCase(),
     password: zod.string()
 })
-
 
 export type LoginPost = zod.infer<typeof LoginPostSchema>

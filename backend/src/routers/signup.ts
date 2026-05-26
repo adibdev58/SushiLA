@@ -1,12 +1,12 @@
 import {Router} from "express"
-import * as zod from "zod"
-import {CustomError, ErrorStatus, SignupPostSchema, type SignupPost, StoredProcedureName} from "@sushila/shared"
+import {CustomResponse, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { insert } from "../utils/db.js";
 
 const router = Router();
 
 
+//Todo: Improve Error-Message! User exists already, if exists
 router.post("/", async (req, res, next)=> {
     try {
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
@@ -17,7 +17,7 @@ router.post("/", async (req, res, next)=> {
             throw err
         }
         else {
-            throw new CustomError(ErrorStatus.ServerError, `Something went wrong with POST-operation! ${err}`,500)
+            throw new CustomError(ErrorStatus.ServerError, `Failed to sign up!`,`Something went wrong with POST-operation! Potential causes: Invalid schema, duplicate user, or database connection issue. rawError: ${err}`,500)
         }
     }
 })
