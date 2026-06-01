@@ -4,7 +4,7 @@ import {CustomResponse} from "./types.js";
 import {ProductPostSchema,type ProductPost} from "./types.js";
 import {CategorySchema,type CategoryPost} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js"
-import {StoredProcedureName} from "./types.js"
+import {StoredProcedureName, type UserQueryData} from "./types.js"
 import {SignupPostSchema, type SignupPost} from "./types.js"
 import {LoginPostSchema, type LoginPost}  from "./types.js"
 import {hash} from "./hash.js"
@@ -14,7 +14,7 @@ export {CustomResponse}
 export {ProductPostSchema,type ProductPost}
 export {CategorySchema,type CategoryPost}
 export {getTimeStampNowUtcIso}
-export {StoredProcedureName}
+export {StoredProcedureName, type UserQueryData}
 export {SignupPostSchema, type SignupPost}
 export {LoginPostSchema, type LoginPost}
 export {hash}

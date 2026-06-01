@@ -5,6 +5,7 @@ import {hash} from "@sushila/shared"
 export enum ErrorStatus {
     NoRessourceFound = "NoRessourceFound",
     LoginRequired = "LoginRequired",
+    AlreadyLoggedIn = "AlreadyLoggedIn",
     AdminRightsRequired = "AdminRightsRequired",
     InvalidCredentials = "InvalidCredentials",
     ServerError = "ServerError",
@@ -29,21 +30,20 @@ export class CustomError {
         this.statusCode = statusCode;
     }
 }
-
 export class CustomResponse {
     readonly isSuccess: boolean;
     readonly data: unknown[] | Record<string,unknown>;
-    readonly error: CustomError;
+    readonly error: CustomError | undefined;
     readonly timeStamp: string;
 
-    constructor(isSuccess: boolean, data: unknown[] | Record<string,unknown>, error: CustomError) {
+    constructor(isSuccess: boolean, data: unknown[] | Record<string,unknown>, error?: CustomError) {
         this.isSuccess = isSuccess;
         this.data = data;
-        this.error = error;
+        this.error = error; 
         this.timeStamp = getTimeStampNowUtcIso();
     }
 }
-
+//---------------------------------------------------------------------------
 export const ProductPostSchema = zod.object({
     name: zod.string().trim().min(1).max(99),
     imgUrls: zod.array(
@@ -69,21 +69,14 @@ export const ProductPostSchema = zod.object({
         }
     }
 );
-    
 export type ProductPost = zod.infer<typeof ProductPostSchema>;
+//---------------------------------------------------------------------------
 
 export const CategorySchema = zod.object({
     name: zod.string().trim().min(1).max(99)
 });
-
 export type CategoryPost = zod.infer<typeof CategorySchema>;
-
-export enum StoredProcedureName {
-    insert_product_atomic = "insert_product_atomic",
-    insert_category = "insert_category",
-    insert_user = "insert_user"
-}
-
+//---------------------------------------------------------------------------
 export const SignupPostSchema = zod.object({
     forename: zod.string().trim().min(1).max(99).toLowerCase(),
     lastname: zod.string().trim().min(1).max(99).toLowerCase(),
@@ -104,12 +97,24 @@ export const SignupPostSchema = zod.object({
         return await hash(pass);
     })
 })
-
-export type SignupPost = zod.infer<typeof SignupPostSchema>
-
+export type SignupPost = zod.infer<typeof SignupPostSchema>;
+//---------------------------------------------------------------------------
 export const LoginPostSchema = zod.object({
     email: zod.email().trim().toLowerCase(),
     password: zod.string()
 })
-
-export type LoginPost = zod.infer<typeof LoginPostSchema>
+export type LoginPost = Omit<UserQueryData, 'password'>
+//---------------------------------------------------------------------------
+export enum StoredProcedureName {
+    insert_product_atomic = "insert_product_atomic",
+    insert_category = "insert_category",
+    insert_user = "insert_user"
+}
+//---------------------------------------------------------------------------
+export type UserQueryData = {
+    "id": number,
+    "forename": string,
+    "lastname": string,
+    "email": string,
+    "password": string
+}

@@ -1,4 +1,4 @@
-import {type ProductPost, type CategoryPost, type SignupPost, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
+import {type ProductPost, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
 
@@ -42,17 +42,9 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
     }
 }
 
-//delete
-type UserInDB = {
-    "id": number,
-    "forename": string,
-    "lastname": string,
-    "email": string,
-    "password": string
-}
 
 async function queryUser(email: string):Promise<{
-    data: UserInDB,
+    data: UserQueryData,
     status: number
 }> {
     try {

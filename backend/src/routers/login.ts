@@ -1,5 +1,5 @@
 import {Router} from "express"
-import { type LoginPost, LoginPostSchema, CustomError, ErrorStatus } from "@sushila/shared";
+import {LoginPostSchema, CustomResponse, CustomError, ErrorStatus, type LoginPost } from "@sushila/shared";
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { queryUser } from "../utils/db.js";
 import * as bcrypt from "bcrypt"
@@ -8,18 +8,17 @@ const router = Router();
 
 declare module "express-session" {
     interface SessionData {
-        email: string
+        email: string,
+        forename: string,
+        lastname: string
     }
 }
 
-//Todo: use an unified-http-response. Combine Error- and success-response together
 router.post("/", async (req, res, next)=> {
     try {
-
-        throw new Error('details');
         //when user is already loged in
         if(req.session.email) {
-            return res.json({logedIn: true})
+            throw new CustomError(ErrorStatus.AlreadyLoggedIn,`Already logged in!`,`You are already logged in! Use the logout-endpoint or delete the cookie to log out.`,400)
         }
 
         const parsedData = await validateZodScheme(LoginPostSchema,req.body);
@@ -27,6 +26,9 @@ router.post("/", async (req, res, next)=> {
         const userQuery = await queryUser(email);
         const plainPassword = password;
         const hashedPassword  = userQuery.data.password;
+        const forename = userQuery.data.forename;
+        const lastname = userQuery.data.lastname;
+        const userId = userQuery.data.id;
     
         const userQueryWasSuccessful = userQuery.status === 200;
         const passwordIsCorrect = await bcrypt.compare(plainPassword, hashedPassword);
@@ -34,8 +36,17 @@ router.post("/", async (req, res, next)=> {
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Invalid credentials`,`The provided email address or password does not match our records. Authentication failed.`, 401);
         
         req.session.email = email;
+        req.session.forename = forename;
+        req.session.lastname = lastname;
         
-        return res.json({...userQuery, passwordIsCorrect})
+        const responseData: LoginPost = {
+            email,
+            forename,
+            lastname,
+            id: userId
+        }
+        const customResponse = new CustomResponse(true, responseData)
+        return res.json(customResponse)
 
     } catch (err) {
         if(err instanceof CustomError) next(err);
