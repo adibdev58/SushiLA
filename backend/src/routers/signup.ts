@@ -1,7 +1,7 @@
 import {Router} from "express"
 import {CustomResponse, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
-import { insert } from "../utils/db.js";
+import { insert, queryUser } from "../utils/db.js";
 
 const router = Router();
 
@@ -10,6 +10,9 @@ const router = Router();
 router.post("/", async (req, res, next)=> {
     try {
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
+        //const userQuery = await queryUser(parsedData.email);
+        //const userIsAlreadyRegistered = userQuery.data.email === parsedData.email;
+
         const result = await insert(parsedData,StoredProcedureName.insert_user);
         res.status(201).json(result);
     } catch (err) {

@@ -1,7 +1,7 @@
 import session from "express-session";
 import { env } from "process";
 import { CustomError, ErrorStatus } from "@sushila/shared";
-import createSupabaseStore from "./createSupabaseStore.js"
+import createSupabaseStore from "../utils/createSupabaseStore.js"
 
 import type { NextFunction,Request, Response } from "express";
 
@@ -9,7 +9,7 @@ export const createSession = () => {
     
     process.loadEnvFile('./.env');
     const secretKey = env.SECRET_SESSION_KEY;
-    if(!secretKey) throw new CustomError(ErrorStatus.NotFoundInEnv, `Some important value is missing in .env-file! SECRET_SESSION_KEY is missing.`,500);
+    if(!secretKey) throw new CustomError(ErrorStatus.NotFoundInEnv, `Some important value is missing in .env-file!`, `SECRET_SESSION_KEY is missing in .env.`,500);
 
     const sessionMiddleware = session({
         secret: secretKey,
@@ -29,7 +29,7 @@ export const createSession = () => {
         } catch (err) {
             if(err instanceof CustomError) next(err);
             else {
-                const errCustom = new CustomError(ErrorStatus.ServerError,`Something went wrong with creating Session! ${err}`,500);
+                const errCustom = new CustomError(ErrorStatus.ServerError,`Something went wrong with creating Session!`, `${err}`,500);
                 next(errCustom)
             }
         }

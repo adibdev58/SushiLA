@@ -1,5 +1,5 @@
 import {Router} from "express"
-import {LoginPostSchema, CustomResponse, CustomError, ErrorStatus, type LoginPost } from "@sushila/shared";
+import {LoginPostSchema, CustomResponse, CustomError, ErrorStatus, type LoginPostResponseData } from "@sushila/shared";
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { queryUser } from "../utils/db.js";
 import * as bcrypt from "bcrypt"
@@ -16,11 +16,6 @@ declare module "express-session" {
 
 router.post("/", async (req, res, next)=> {
     try {
-        //when user is already loged in
-        if(req.session.email) {
-            throw new CustomError(ErrorStatus.AlreadyLoggedIn,`Already logged in!`,`You are already logged in! Use the logout-endpoint or delete the cookie to log out.`,400)
-        }
-
         const parsedData = await validateZodScheme(LoginPostSchema,req.body);
         const {email, password} = parsedData;
         const userQuery = await queryUser(email);
@@ -31,7 +26,7 @@ router.post("/", async (req, res, next)=> {
         const userId = userQuery.data.id;
     
         const userQueryWasSuccessful = userQuery.status === 200;
-        const passwordIsCorrect = await bcrypt.compare(plainPassword, hashedPassword);
+        const passwordIsCorrect = userQueryWasSuccessful ? await bcrypt.compare(plainPassword, hashedPassword) : null;
     
         if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Invalid credentials`,`The provided email address or password does not match our records. Authentication failed.`, 401);
         
@@ -39,7 +34,7 @@ router.post("/", async (req, res, next)=> {
         req.session.forename = forename;
         req.session.lastname = lastname;
         
-        const responseData: LoginPost = {
+        const responseData: LoginPostResponseData = {
             email,
             forename,
             lastname,

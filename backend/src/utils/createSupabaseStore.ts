@@ -13,7 +13,7 @@ export default function createSupabaseStore(): pgSession.PGStore {
     const user = env.SUPABASE_SESSION_USER;
     const password = env.SUPABASE_SESSION_PASSWORD;
 
-    if(!host || !port || !database || !user || !password) throw new CustomError(ErrorStatus.NotFoundInEnv, `Some important SUPABASE_SESSION value is missing in .env-file!`,500);
+    if(!host || !port || !database || !user || !password) throw new CustomError(ErrorStatus.NotFoundInEnv, `Some important SUPABASE_SESSION value is missing in .env-file!`, `SUPABASE_SESSION_HOST or SUPABASE_SESSION_PORT or SUPABASE_SESSION_DATABASE or SUPABASE_SESSION_USER or SUPABASE_SESSION_PASSWORD is missing in .env-file`,500);
     
     const pgPool = new pg.Pool({
         host:host,

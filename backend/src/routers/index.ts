@@ -6,7 +6,7 @@ import categoriesRouter from "./categories.js"
 import signupRouter from "./signup.js"
 import loginRouter from "./login.js"
 
-import {createSession} from "../middleware/index.js"
+import {createSession, errRespIfLoggedIn} from "../middleware/index.js"
 
 const rootRouterV1 = express.Router();
 
@@ -16,7 +16,7 @@ rootRouterV1.use(express.json())
 rootRouterV1.use("/admin", adminRouter);
 rootRouterV1.use("/products",productsRouter);
 rootRouterV1.use("/categories",categoriesRouter);
-rootRouterV1.use("/signup", signupRouter);
-rootRouterV1.use("/login", loginRouter);
+rootRouterV1.use("/signup", errRespIfLoggedIn, signupRouter);
+rootRouterV1.use("/login", errRespIfLoggedIn, loginRouter);
 
 export {rootRouterV1};

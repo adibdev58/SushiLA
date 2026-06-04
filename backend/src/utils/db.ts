@@ -17,7 +17,12 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Invalid environment variables in .env.`,`Failed to connect to the database. Please verify PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
-async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName) {
+
+type InsertResponseData= {
+    data: ProductPost | CategoryPost | SignupPost,
+    status: number
+}
+async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
     try {
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
@@ -42,20 +47,22 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
     }
 }
 
-
 async function queryUser(email: string):Promise<{
     data: UserQueryData,
     status: number
 }> {
     try {
         const database = await db();
-        const {data, error, status} = await database.from("users").select("*").eq("email",email).single();
+        const {data, error, status} = await database
+            .from("users")
+            .select("*")
+            .eq("email",email).single();
 
         if(error) {
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError,`User not found!`, `Something went wrong with the DB query! User does not exist. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
+            throw new CustomError(ErrorStatus.DatabaseError,`User not found!`, `Something went wrong with the DB query! User does not exist. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,404)
         }
         
     return {data,status}

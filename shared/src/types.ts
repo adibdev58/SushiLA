@@ -103,7 +103,7 @@ export const LoginPostSchema = zod.object({
     email: zod.email().trim().toLowerCase(),
     password: zod.string()
 })
-export type LoginPost = Omit<UserQueryData, 'password'>
+export type LoginPostResponseData = Omit<UserQueryData, 'password'>
 //---------------------------------------------------------------------------
 export enum StoredProcedureName {
     insert_product_atomic = "insert_product_atomic",
