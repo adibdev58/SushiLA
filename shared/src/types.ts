@@ -12,6 +12,7 @@ export enum ErrorStatus {
     DatabaseError = "DatabaseError",
     NotFoundInEnv = "NotFoundInEnv",
     ValidationError="ValidationError",
+    userExistsAlready="userExistsAlready",
     PasswordHashingError = "PasswordHashingError"
 }
 export class CustomError {
@@ -30,13 +31,13 @@ export class CustomError {
         this.statusCode = statusCode;
     }
 }
-export class CustomResponse {
+export class CustomResponse<T> {
     readonly isSuccess: boolean;
-    readonly data: unknown[] | Record<string,unknown>;
+    readonly data: T;
     readonly error: CustomError | undefined;
     readonly timeStamp: string;
 
-    constructor(isSuccess: boolean, data: unknown[] | Record<string,unknown>, error?: CustomError) {
+    constructor(isSuccess: boolean, data:T, error?: CustomError) {
         this.isSuccess = isSuccess;
         this.data = data;
         this.error = error; 
@@ -98,6 +99,7 @@ export const SignupPostSchema = zod.object({
     })
 })
 export type SignupPost = zod.infer<typeof SignupPostSchema>;
+export type SignupPostResponseData = Omit<SignupPost , 'password'>;
 //---------------------------------------------------------------------------
 export const LoginPostSchema = zod.object({
     email: zod.email().trim().toLowerCase(),

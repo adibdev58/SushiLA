@@ -34,7 +34,7 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError, `DB Insert Error`,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}}`,500)
+            throw new CustomError(ErrorStatus.DatabaseError, `DB Insert Error`,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
         }
         
     return {data,status}
@@ -74,4 +74,10 @@ async function queryUser(email: string):Promise<{
         }
     }
 }
-export {insert,queryUser}
+
+async function userExists(email: string):Promise<boolean> {
+    const dbClient = await db();
+    const userExists = await (await dbClient.from('users').select(undefined).eq('email',email)).status === 200;
+    return userExists
+}
+export {insert,queryUser,userExists}

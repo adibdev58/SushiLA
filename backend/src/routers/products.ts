@@ -25,7 +25,7 @@ router.post("/", async (req, res, next)=> {
         if(err instanceof CustomError) {
             next(err)
         } else {
-            next(new CustomError(ErrorStatus.ServerError, `Something went wrong with POST-operation! ${err}`, 500))
+            next(new CustomError(ErrorStatus.ServerError, `DB Insert Error`, ` ${err}`,500))
         }
     }
     

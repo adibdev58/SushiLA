@@ -5,7 +5,7 @@ import {ProductPostSchema,type ProductPost} from "./types.js";
 import {CategorySchema,type CategoryPost} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js"
 import {StoredProcedureName, type UserQueryData} from "./types.js"
-import {SignupPostSchema, type SignupPost} from "./types.js"
+import {SignupPostSchema, type SignupPost, type SignupPostResponseData} from "./types.js"
 import {LoginPostSchema, type LoginPostResponseData}  from "./types.js"
 import {hash} from "./hash.js"
 
@@ -15,6 +15,6 @@ export {ProductPostSchema,type ProductPost}
 export {CategorySchema,type CategoryPost}
 export {getTimeStampNowUtcIso}
 export {StoredProcedureName, type UserQueryData}
-export {SignupPostSchema, type SignupPost}
+export {SignupPostSchema, type SignupPost, type SignupPostResponseData}
 export {LoginPostSchema, type LoginPostResponseData}
 export {hash}

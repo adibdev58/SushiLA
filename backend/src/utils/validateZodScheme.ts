@@ -8,7 +8,7 @@ export async function validateZodScheme<T>(schema: zod.ZodType<T>, data: unknown
         result.error.issues.forEach((errObj)=> {
             errMessages+=`${errObj.message}. \\n `
         })
-        throw new CustomError(ErrorStatus.ValidationError, `Data couldn't be parsed cause it does not match the schema! \\n ${errMessages}`, 400)
+        throw new CustomError(ErrorStatus.ValidationError, `The data structure does not match the schema definition.` ,`Data couldn't be parsed cause it does not match the schema! \\n ${errMessages}`, 400)
     }
     return result.data
 }

@@ -1,20 +1,27 @@
-import {Router} from "express"
-import {CustomResponse, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, StoredProcedureName} from "@sushila/shared"
+import {Router, type NextFunction, type RequestHandler, type Response, type Request} from "express"
+import {CustomResponse, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
-import { insert, queryUser } from "../utils/db.js";
+import { insert, queryUser,userExists } from "../utils/db.js";
 
 const router = Router();
 
+type PostDefaultResponse = Response<CustomResponse<any>>;
 
-//Todo: Improve Error-Message! User exists already, if exists
-router.post("/", async (req, res, next)=> {
+//Todo: standardize the login response
+//Todo: "User is already registered!" although its not.
+router.post("/", async (req, res:PostDefaultResponse, next) => {
     try {
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
-        //const userQuery = await queryUser(parsedData.email);
-        //const userIsAlreadyRegistered = userQuery.data.email === parsedData.email;
+        const userIsAlreadyRegistered = await userExists(parsedData.email);
+        console.log(``)
+        if(userIsAlreadyRegistered){
+            throw new CustomError(ErrorStatus.userExistsAlready, `User is already registered!`,`The user's email is already saved in the database.`,400)
+        }
 
         const result = await insert(parsedData,StoredProcedureName.insert_user);
-        res.status(201).json(result);
+        const responseObject = new CustomResponse(true, result);
+        res.status(201).json(responseObject);
+        
     } catch (err) {
         if(err instanceof CustomError) {
             throw err
