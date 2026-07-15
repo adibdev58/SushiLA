@@ -7,19 +7,18 @@ const router = Router();
 
 type PostDefaultResponse = Response<CustomResponse<any>>;
 
-//Todo: standardize the login response
-//Todo: "User is already registered!" although its not.
+//completed
 router.post("/", async (req, res:PostDefaultResponse, next) => {
     try {
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
         const userIsAlreadyRegistered = await userExists(parsedData.email);
-        console.log(``)
+
         if(userIsAlreadyRegistered){
             throw new CustomError(ErrorStatus.userExistsAlready, `User is already registered!`,`The user's email is already saved in the database.`,400)
         }
 
         const result = await insert(parsedData,StoredProcedureName.insert_user);
-        const responseObject = new CustomResponse(true, result);
+        const responseObject:CustomResponse<any> = new CustomResponse(true, result);
         res.status(201).json(responseObject);
         
     } catch (err) {
@@ -32,4 +31,4 @@ router.post("/", async (req, res:PostDefaultResponse, next) => {
     }
 })
 
-export default router;
+export default router;  

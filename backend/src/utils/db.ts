@@ -48,12 +48,11 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
 }
 
 async function queryUser(email: string):Promise<{
-    data: UserQueryData,
-    status: number
+    data: UserQueryData
 }> {
     try {
         const database = await db();
-        const {data, error, status} = await database
+        const {data, error} = await database
             .from("users")
             .select("*")
             .eq("email",email).single();
@@ -65,7 +64,7 @@ async function queryUser(email: string):Promise<{
             throw new CustomError(ErrorStatus.DatabaseError,`User not found!`, `Something went wrong with the DB query! User does not exist. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,404)
         }
         
-    return {data,status}
+    return {data}
     } catch(err) {
         if(err instanceof CustomError) {
             throw err;
@@ -77,7 +76,12 @@ async function queryUser(email: string):Promise<{
 
 async function userExists(email: string):Promise<boolean> {
     const dbClient = await db();
-    const userExists = await (await dbClient.from('users').select(undefined).eq('email',email)).status === 200;
+    const {error, data} = await dbClient.from('users').select('*').eq('email',email);
+
+    if(error) {
+        throw new CustomError(ErrorStatus.DatabaseError, `DB Query failed!`, `${error}`, 500);
+    }
+    const userExists = data.length > 0;
     return userExists
 }
 export {insert,queryUser,userExists}

@@ -8,6 +8,6 @@ export async function hash(password: string) {
         const hashedPassword = await bycrypt.hash(password,salt);
         return hashedPassword
     } catch (err) {
-        throw new CustomError(ErrorStatus.PasswordHashingError, `Something wen't wrong with hashing Password! ${err}`,500);
+        throw new CustomError(ErrorStatus.PasswordHashingError, `Password hashing failed!`,`${err}`,500);
     }
 }

@@ -1,4 +1,4 @@
-import {Router} from "express"
+import {Router, type Response} from "express"
 import {LoginPostSchema, CustomResponse, CustomError, ErrorStatus, type LoginPostResponseData } from "@sushila/shared";
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { queryUser } from "../utils/db.js";
@@ -14,6 +14,10 @@ declare module "express-session" {
     }
 }
 
+type PostDefaultResponse = Response<CustomResponse<any>>;
+
+//Todo: Standardize login Response
+//Todo: PostDefaultResponse in signup.ts and login.ts should be declared in one place. Ideally under shared/types.
 router.post("/", async (req, res, next)=> {
     try {
         const parsedData = await validateZodScheme(LoginPostSchema,req.body);
@@ -24,11 +28,10 @@ router.post("/", async (req, res, next)=> {
         const forename = userQuery.data.forename;
         const lastname = userQuery.data.lastname;
         const userId = userQuery.data.id;
+
+        const passwordIsCorrect =  await bcrypt.compare(plainPassword, hashedPassword);
     
-        const userQueryWasSuccessful = userQuery.status === 200;
-        const passwordIsCorrect = userQueryWasSuccessful ? await bcrypt.compare(plainPassword, hashedPassword) : null;
-    
-        if(!passwordIsCorrect || !userQueryWasSuccessful) throw new CustomError(ErrorStatus.InvalidCredentials, `Invalid credentials`,`The provided email address or password does not match our records. Authentication failed.`, 401);
+        if(!passwordIsCorrect) throw new CustomError(ErrorStatus.InvalidCredentials, `Invalid credentials`,`The provided email address ${email} or password does not match our records. Authentication failed.`, 401);
         
         req.session.email = email;
         req.session.forename = forename;

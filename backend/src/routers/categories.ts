@@ -12,7 +12,7 @@ router.post("/", async (req,res,next)=> {
         if( err instanceof CustomError) {
             throw err
         } else {
-            throw new CustomError(ErrorStatus.ServerError,`Something went wrong with inserting in DB! ${err}`,500)
+            throw new CustomError(ErrorStatus.ServerError,`Inserting in DB failed!`, `${err}`,500)
         }
        
     }
