@@ -1,5 +1,5 @@
 import {Router, type Response} from "express"
-import {LoginPostSchema, CustomResponse, CustomError, ErrorStatus, type LoginPostResponseData } from "@sushila/shared";
+import {LoginPostSchema, CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, type LoginPostResponseData } from "@sushila/shared";
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { queryUser } from "../utils/db.js";
 import * as bcrypt from "bcrypt"
@@ -14,11 +14,8 @@ declare module "express-session" {
     }
 }
 
-type PostDefaultResponse = Response<CustomResponse<any>>;
-
-//Todo: Standardize login Response
-//Todo: PostDefaultResponse in signup.ts and login.ts should be declared in one place. Ideally under shared/types.
-router.post("/", async (req, res, next)=> {
+//Completed
+router.post("/", async (req, res: ResponseObjectType<LoginPostResponseData>, next)=> {
     try {
         const parsedData = await validateZodScheme(LoginPostSchema,req.body);
         const {email, password} = parsedData;

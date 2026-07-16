@@ -1,14 +1,13 @@
-import {Router, type NextFunction, type RequestHandler, type Response, type Request} from "express"
-import {CustomResponse, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName} from "@sushila/shared"
+import {Router} from "express"
+import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { insert, queryUser,userExists } from "../utils/db.js";
+import { parse } from "node:path";
 
 const router = Router();
 
-type PostDefaultResponse = Response<CustomResponse<any>>;
-
 //completed
-router.post("/", async (req, res:PostDefaultResponse, next) => {
+router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, next) => {
     try {
         const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
         const userIsAlreadyRegistered = await userExists(parsedData.email);
@@ -18,7 +17,13 @@ router.post("/", async (req, res:PostDefaultResponse, next) => {
         }
 
         const result = await insert(parsedData,StoredProcedureName.insert_user);
-        const responseObject:CustomResponse<any> = new CustomResponse(true, result);
+        
+        const responseData:SignupPostResponseData = {
+            email: parsedData.email,
+            forename: parsedData.forename,
+            lastname: parsedData.lastname
+        }
+        const responseObject:CustomResponse<SignupPostResponseData> = new CustomResponse(true, responseData);
         res.status(201).json(responseObject);
         
     } catch (err) {

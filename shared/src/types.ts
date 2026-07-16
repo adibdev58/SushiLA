@@ -1,6 +1,7 @@
 import { getTimeStampNowUtcIso } from '@sushila/shared';
 import * as zod from "zod";
 import {hash} from "@sushila/shared"
+import {type Response} from 'express'
 
 export enum ErrorStatus {
     NoRessourceFound = "NoRessourceFound",
@@ -44,6 +45,7 @@ export class CustomResponse<T> {
         this.timeStamp = getTimeStampNowUtcIso();
     }
 }
+export type ResponseObjectType<T> = Response<CustomResponse<T>>;
 //---------------------------------------------------------------------------
 export const ProductPostSchema = zod.object({
     name: zod.string().trim().min(1).max(99),
@@ -71,6 +73,7 @@ export const ProductPostSchema = zod.object({
     }
 );
 export type ProductPost = zod.infer<typeof ProductPostSchema>;
+export type ProductPostResponseData = ProductPost;
 //---------------------------------------------------------------------------
 
 export const CategorySchema = zod.object({

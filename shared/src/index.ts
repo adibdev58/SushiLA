@@ -1,7 +1,7 @@
 
 import {ErrorStatus,CustomError} from "./types.js";
-import {CustomResponse} from "./types.js";
-import {ProductPostSchema,type ProductPost} from "./types.js";
+import {CustomResponse, type ResponseObjectType} from "./types.js";
+import {ProductPostSchema,type ProductPost, type ProductPostResponseData} from "./types.js";
 import {CategorySchema,type CategoryPost} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js"
 import {StoredProcedureName, type UserQueryData} from "./types.js"
@@ -10,8 +10,8 @@ import {LoginPostSchema, type LoginPostResponseData}  from "./types.js"
 import {hash} from "./hash.js"
 
 export {ErrorStatus,CustomError}
-export {CustomResponse}
-export {ProductPostSchema,type ProductPost}
+export {CustomResponse, type ResponseObjectType}
+export {ProductPostSchema,type ProductPost, type ProductPostResponseData}
 export {CategorySchema,type CategoryPost}
 export {getTimeStampNowUtcIso}
 export {StoredProcedureName, type UserQueryData}

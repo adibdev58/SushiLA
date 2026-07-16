@@ -1,6 +1,7 @@
 import {type ProductPost, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
+import { email } from "zod";
 
 async function db() {
     const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
@@ -17,11 +18,9 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Invalid environment variables in .env.`,`Failed to connect to the database. Please verify PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
+type SignupPostNoPassword = Omit<SignupPost,'password'>;
+type InsertResponseData= ProductPost | CategoryPost | SignupPostNoPassword;
 
-type InsertResponseData= {
-    data: ProductPost | CategoryPost | SignupPost,
-    status: number
-}
 async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
     try {
         const database = await db();
@@ -36,8 +35,8 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
             const errorCause = error.cause;
             throw new CustomError(ErrorStatus.DatabaseError, `DB Insert Error`,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
         }
-        
-    return {data,status}
+
+    return data
     } catch(err) {
         if(err instanceof CustomError) {
             throw err;

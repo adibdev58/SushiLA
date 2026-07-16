@@ -1,6 +1,5 @@
 import express from "express"
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost, StoredProcedureName } from '@sushila/shared';
+import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponseData } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
 import {insert} from "../utils/db.js"
 
@@ -16,11 +15,17 @@ router.get("/", (req, res)=> {
     )
 })
 
-//completed
-router.post("/", async (req, res, next)=> {
+
+//Todo: Nest admin route/endpoint with products. So its only available under hosturl/admin/products
+router.post("/", async (req, res: ResponseObjectType<ProductPostResponseData>, next)=> {
     try {
         const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
-        res.status(201).json({response: await insert(parsedBody, StoredProcedureName.insert_product_atomic)})
+        const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
+
+        const responseData: ProductPostResponseData = parsedBody;
+        const response: CustomResponse<ProductPostResponseData> = new CustomResponse(true, responseData);
+
+        res.status(201).json(response)
     } catch(err) {
         if(err instanceof CustomError) {
             next(err)
