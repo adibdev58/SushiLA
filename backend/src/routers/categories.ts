@@ -4,6 +4,8 @@ import {insert} from "../utils/db.js"
 
 const router = Router();
 
+
+//Todo: Implement standardized response
 router.post("/", async (req,res,next)=> {
     try {
         const parsedBody: CategoryPost = CategorySchema.parse(req.body);

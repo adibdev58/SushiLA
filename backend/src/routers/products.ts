@@ -19,6 +19,10 @@ router.get("/", (req, res)=> {
 //Todo: Nest admin route/endpoint with products. So its only available under hosturl/admin/products
 router.post("/", async (req, res: ResponseObjectType<ProductPostResponseData>, next)=> {
     try {
+        //admin route adds true to req.isFromAdminEndpoint
+        if(!req.isFromAdminEndpoint) {
+            throw new CustomError(ErrorStatus.NoRessourceFound, `Ressource couln't be found!`, `Send your POST-Request to admin/products.`,500)
+        }
         const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
         const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
 
@@ -32,8 +36,7 @@ router.post("/", async (req, res: ResponseObjectType<ProductPostResponseData>, n
         } else {
             next(new CustomError(ErrorStatus.ServerError, `DB Insert Error`, ` ${err}`,500))
         }
-    }
-    
+    }   
 })
 
 export default router
