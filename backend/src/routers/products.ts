@@ -1,7 +1,9 @@
 import express from "express"
+import {type Request, type NextFunction} from "express"
 import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponseData } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
 import {insert} from "../utils/db.js"
+import {isFromAdminEndpoint} from "../middleware/index.js";
 
 const router = express.Router();
 
@@ -15,14 +17,9 @@ router.get("/", (req, res)=> {
     )
 })
 
-
-//Todo: Nest admin route/endpoint with products. So its only available under hosturl/admin/products
-router.post("/", async (req, res: ResponseObjectType<ProductPostResponseData>, next)=> {
+//Completed
+router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponseData>, next:NextFunction)=> {
     try {
-        //admin route adds true to req.isFromAdminEndpoint
-        if(!req.isFromAdminEndpoint) {
-            throw new CustomError(ErrorStatus.NoRessourceFound, `Ressource couln't be found!`, `Send your POST-Request to admin/products.`,500)
-        }
         const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
         const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
 

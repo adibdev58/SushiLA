@@ -80,6 +80,7 @@ export const CategorySchema = zod.object({
     name: zod.string().trim().min(1).max(99)
 });
 export type CategoryPost = zod.infer<typeof CategorySchema>;
+export type CategoryPostResponseData = CategoryPost;
 //---------------------------------------------------------------------------
 export const SignupPostSchema = zod.object({
     forename: zod.string().trim().min(1).max(99).toLowerCase(),

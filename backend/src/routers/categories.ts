@@ -1,22 +1,26 @@
 import {Router} from "express"
-import { CustomError ,ErrorStatus, CategorySchema, type CategoryPost, StoredProcedureName } from '@sushila/shared';
+import {type Request, type NextFunction} from "express"
+import {CustomError ,ErrorStatus, CustomResponse ,type ResponseObjectType ,CategorySchema, type CategoryPost, type CategoryPostResponseData, StoredProcedureName } from '@sushila/shared';
 import {insert} from "../utils/db.js"
+import { isFromAdminEndpoint } from "../middleware/isFromAdminEndpoint.js";
 
 const router = Router();
 
-
-//Todo: Implement standardized response
-router.post("/", async (req,res,next)=> {
-    try {
+//Completed
+router.post("/" ,isFromAdminEndpoint ,async(req:Request,res:ResponseObjectType<CategoryPostResponseData> ,next:NextFunction)=> {
+    try { 
         const parsedBody: CategoryPost = CategorySchema.parse(req.body);
-        res.status(201).json(await insert(parsedBody, StoredProcedureName.insert_category))
+        const result = await insert(parsedBody, StoredProcedureName.insert_category);
+
+        const responseData: CategoryPostResponseData = parsedBody;
+        const response:CustomResponse<CategoryPostResponseData> = new CustomResponse(true, responseData);
+        res.status(201).json(response);
     } catch(err) {
         if( err instanceof CustomError) {
             throw err
         } else {
             throw new CustomError(ErrorStatus.ServerError,`Inserting in DB failed!`, `${err}`,500)
-        }
-       
+        } 
     }
 })
 
