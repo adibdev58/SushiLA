@@ -17,7 +17,7 @@ router.get("/", (req, res)=> {
     )
 })
 
-//Completed
+//Todo: Refactor because of changes in DB-table of Products.
 router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponseData>, next:NextFunction)=> {
     try {
         const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
@@ -32,6 +32,26 @@ router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectTyp
             next(err)
         } else {
             next(new CustomError(ErrorStatus.ServerError, `DB Insert Error`, ` ${err}`,500))
+        }
+    }   
+})
+
+//Todo: Implement Put
+//Todo: Added lastUpdateDate, lastUser and creator-Colums to products table in DB. So adjust all controllers/request-handlers for products-Endpoints.
+router.put('/:productId',isFromAdminEndpoint, async (req , res, next) => {
+     try {
+        /* const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
+        const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
+
+        const responseData: ProductPostResponseData = parsedBody;
+        const response: CustomResponse<ProductPostResponseData> = new CustomResponse(true, responseData); */
+
+        //res.status(201).json(response)
+    } catch(err) {
+        if(err instanceof CustomError) {
+            next(err)
+        } else {
+            next(new CustomError(ErrorStatus.ServerError, `DB update Error`, `${err}`,500))
         }
     }   
 })

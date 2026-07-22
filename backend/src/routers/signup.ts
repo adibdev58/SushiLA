@@ -26,6 +26,7 @@ router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, nex
         const responseObject:CustomResponse<SignupPostResponseData> = new CustomResponse(true, responseData);
         res.status(201).json(responseObject);
         
+        
     } catch (err) {
         if(err instanceof CustomError) {
             throw err

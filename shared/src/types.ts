@@ -7,7 +7,7 @@ export enum ErrorStatus {
     NoRessourceFound = "NoRessourceFound",
     LoginRequired = "LoginRequired",
     AlreadyLoggedIn = "AlreadyLoggedIn",
-    AdminRightsRequired = "AdminRightsRequired",
+    NotAuthorized = "NotAuthorized",
     InvalidCredentials = "InvalidCredentials",
     ServerError = "ServerError",
     DatabaseError = "DatabaseError",
@@ -48,6 +48,7 @@ export class CustomResponse<T> {
 export type ResponseObjectType<T> = Response<CustomResponse<T>>;
 //---------------------------------------------------------------------------
 export const ProductPostSchema = zod.object({
+    creator: zod.string().trim().min(1).max(99),
     name: zod.string().trim().min(1).max(99),
     imgUrls: zod.array(
     zod.object({url: zod.string().trim().min(1).max(1000) }),

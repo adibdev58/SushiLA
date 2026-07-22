@@ -6,14 +6,21 @@ import categoriesRouter from "./categories.js"
 import signupRouter from "./signup.js"
 import loginRouter from "./login.js"
 
-import {createSession, errRespIfLoggedIn} from "../middleware/index.js"
+import {createSession, errRespIfLoggedIn, errRespIfNotLoggedIn, errRespIfNotAuthorized} from "../middleware/index.js"
 
 const rootRouterV1 = express.Router();
 
 rootRouterV1.use(createSession())
 
+//Todo: save it under @sushila/shared
+enum roles {
+  admin = 'admin',
+  user = 'user'
+}
+
 rootRouterV1.use(express.json())
-rootRouterV1.use("/admin", adminRouter);
+//Todo: Add roles in DB!
+rootRouterV1.use("/admin", errRespIfNotLoggedIn, errRespIfNotAuthorized([roles.admin]), adminRouter);
 rootRouterV1.use("/products",productsRouter);
 rootRouterV1.use("/categories",categoriesRouter);
 rootRouterV1.use("/signup", errRespIfLoggedIn, signupRouter);
