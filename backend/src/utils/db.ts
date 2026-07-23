@@ -83,4 +83,28 @@ async function userExists(email: string):Promise<boolean> {
     const userExists = data.length > 0;
     return userExists
 }
-export {insert,queryUser,userExists}
+
+//Todo: Save it under @sushila/shared
+enum roles {
+    admin = "admin",
+    user = "user"
+}
+
+async function queryRoleId(role: roles): Promise<number> {
+    const database = await db();
+    const {data, error} = await database
+                            .from('roles')
+                            .select('id')
+                            .eq('role',`${role}`);
+    if(error) {
+        throw new CustomError(ErrorStatus.DatabaseError, `DB Query failed for ${role} role!`, `${error}`, 500);
+    }
+
+    if(!data) {
+        throw new CustomError(ErrorStatus.DatabaseError, `${role} role not found in DB!`, `´Make sure ${role} is in roles table in DB and try again.`, 500); 
+    }
+    const roleId = data[0]?.id;
+
+    return roleId
+}
+export {insert,queryUser,userExists,queryRoleId}

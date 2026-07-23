@@ -1,31 +1,39 @@
 import {Router} from "express"
 import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
-import { insert, queryUser,userExists } from "../utils/db.js";
-import { parse } from "node:path";
+import { insert, queryRoleId,userExists } from "../utils/db.js";
 
 const router = Router();
 
 //completed
 router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, next) => {
     try {
-        const parsedData: SignupPost = await validateZodScheme(SignupPostSchema,req.body);
+        const parsedData: Omit<SignupPost,'roleId'> = await validateZodScheme(SignupPostSchema,req.body);
         const userIsAlreadyRegistered = await userExists(parsedData.email);
 
         if(userIsAlreadyRegistered){
             throw new CustomError(ErrorStatus.userExistsAlready, `User is already registered!`,`The user's email is already saved in the database.`,400)
         }
+        //Todo: Save it under @sushila/shared
+        enum roles {
+            admin = "admin",
+            user = "user"
+        }
 
-        const result = await insert(parsedData,StoredProcedureName.insert_user);
+        const roleId = await queryRoleId(roles.user);
+
+        const dataToInsert:SignupPost = {...parsedData,roleId};
+
+        const result = await insert(dataToInsert,StoredProcedureName.insert_user);
         
         const responseData:SignupPostResponseData = {
-            email: parsedData.email,
-            forename: parsedData.forename,
-            lastname: parsedData.lastname
+            email: dataToInsert.email,
+            forename: dataToInsert.forename,
+            lastname: dataToInsert.lastname,
+            roleId: dataToInsert.roleId
         }
         const responseObject:CustomResponse<SignupPostResponseData> = new CustomResponse(true, responseData);
         res.status(201).json(responseObject);
-        
         
     } catch (err) {
         if(err instanceof CustomError) {

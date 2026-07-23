@@ -94,7 +94,7 @@ export const SignupPostSchema = zod.object({
         /[A-Z]/,
         "Your password should contain at least one capital letter!"
     ).regex(
-        /[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@\[\]\^_`{\|}~]/,
+        /[!"#\$%&'\(\)\*\+,-\.\/:;<=>\?@\[\]\^_`{\|}~\\]/,
         "Your password must contain at least one special character!"
     ).regex(
         /[0-9]/,
@@ -103,7 +103,7 @@ export const SignupPostSchema = zod.object({
         return await hash(pass);
     })
 })
-export type SignupPost = zod.infer<typeof SignupPostSchema>;
+export type SignupPost = zod.infer<typeof SignupPostSchema> & {roleId: number};
 export type SignupPostResponseData = Omit<SignupPost , 'password'>;
 //---------------------------------------------------------------------------
 export const LoginPostSchema = zod.object({
