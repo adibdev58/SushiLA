@@ -1,4 +1,5 @@
 import {type Express} from 'express';
+import {roles} from "@sushila/shared"
 import 'express-session';
 import type { expectFailure } from 'node:test';
 
@@ -12,9 +13,11 @@ declare global {
 
 declare module 'express-session' {
   interface SessionData {
-    email?: string;
-    forename?: string;
-    lastname?: string;
-    role?: 'admin' | 'user';
+      UserData : {
+        email: string;
+        forename: string;
+        lastname: string;
+        role: roles;
+      }
     }
 }

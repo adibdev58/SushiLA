@@ -1,18 +1,10 @@
 import {Router, type Response} from "express"
-import {LoginPostSchema, CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, type LoginPostResponseData } from "@sushila/shared";
+import {LoginPostSchema, CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, type LoginPostResponseData, roles} from "@sushila/shared";
 import { validateZodScheme } from "../utils/validateZodScheme.js";
-import { queryUser } from "../utils/db.js";
+import { queryUser, queryRoleWithId } from "../utils/db.js";
 import * as bcrypt from "bcrypt"
 
 const router = Router();
-
-declare module "express-session" {
-    interface SessionData {
-        email: string,
-        forename: string,
-        lastname: string
-    }
-}
 
 //Completed
 router.post("/", async (req, res: ResponseObjectType<LoginPostResponseData>, next)=> {
@@ -25,15 +17,25 @@ router.post("/", async (req, res: ResponseObjectType<LoginPostResponseData>, nex
         const forename = userQuery.data.forename;
         const lastname = userQuery.data.lastname;
         const userId = userQuery.data.id;
+        const roleId = userQuery.data.role_id;
 
         const passwordIsCorrect =  await bcrypt.compare(plainPassword, hashedPassword);
     
         if(!passwordIsCorrect) throw new CustomError(ErrorStatus.InvalidCredentials, `Invalid credentials`,`The provided email address ${email} or password does not match our records. Authentication failed.`, 401);
         
-        req.session.email = email;
-        req.session.forename = forename;
-        req.session.lastname = lastname;
-        
+        const roleName = await queryRoleWithId(roleId);
+
+        //Todo: Implement roles here
+        //Todo: reponseData should contain the role of the user in string. 
+        const userData = {
+            email,
+            forename,
+            lastname,
+            role: roleName
+        }
+
+        req.session.UserData = userData;
+      
         const responseData: LoginPostResponseData = {
             email,
             forename,

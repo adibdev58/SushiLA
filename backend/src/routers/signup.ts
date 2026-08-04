@@ -1,5 +1,5 @@
 import {Router} from "express"
-import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName} from "@sushila/shared"
+import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName, roles} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
 import { insert, queryRoleId,userExists } from "../utils/db.js";
 
@@ -14,15 +14,10 @@ router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, nex
         if(userIsAlreadyRegistered){
             throw new CustomError(ErrorStatus.userExistsAlready, `User is already registered!`,`The user's email is already saved in the database.`,400)
         }
-        //Todo: Save it under @sushila/shared
-        enum roles {
-            admin = "admin",
-            user = "user"
-        }
+        
+        const defaultRoleId = await queryRoleId(roles.user);
 
-        const roleId = await queryRoleId(roles.user);
-
-        const dataToInsert:SignupPost = {...parsedData,roleId};
+        const dataToInsert:SignupPost = {...parsedData,roleId: defaultRoleId};
 
         const result = await insert(dataToInsert,StoredProcedureName.insert_user);
         

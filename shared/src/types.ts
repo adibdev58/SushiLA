@@ -123,5 +123,11 @@ export type UserQueryData = {
     "forename": string,
     "lastname": string,
     "email": string,
-    "password": string
+    "password": string,
+    "role_id": number
+}
+//---------------------------------------------------------------------------
+export enum roles {
+    admin = "admin",
+    user = "user"
 }

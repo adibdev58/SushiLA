@@ -1,7 +1,7 @@
-import {type ProductPost, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName} from "@sushila/shared"
+import {type ProductPost, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName, roles} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
-import { email } from "zod";
+
 
 async function db() {
     const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
@@ -78,16 +78,11 @@ async function userExists(email: string):Promise<boolean> {
     const {error, data} = await dbClient.from('users').select('*').eq('email',email);
 
     if(error) {
-        throw new CustomError(ErrorStatus.DatabaseError, `DB Query failed!`, `${error}`, 500);
+        const {message, details} = error;
+        throw new CustomError(ErrorStatus.DatabaseError, `DB Query failed!`, `${message} ${details}`, 500);
     }
     const userExists = data.length > 0;
     return userExists
-}
-
-//Todo: Save it under @sushila/shared
-enum roles {
-    admin = "admin",
-    user = "user"
 }
 
 async function queryRoleId(role: roles): Promise<number> {
@@ -107,4 +102,22 @@ async function queryRoleId(role: roles): Promise<number> {
 
     return roleId
 }
-export {insert,queryUser,userExists,queryRoleId}
+
+async function queryRoleWithId(roleId: number): Promise<string> {
+    const database = await db();
+    const {data, error} = await database
+                            .from('roles')
+                            .select('role')
+                            .eq('id',`${roleId}`);
+    if(error) {
+        throw new CustomError(ErrorStatus.DatabaseError, `DB Query failed for ${roleId} role!`, `${error}`, 500);
+    }
+
+    if(!data) {
+        throw new CustomError(ErrorStatus.DatabaseError, `${roleId} role not found in DB!`, `´Make sure ${roleId} is in roles table in DB and try again.`, 500); 
+    }
+    const roleName = data[0]?.role;
+
+    return roleName
+}
+export {insert,queryUser,userExists,queryRoleId,queryRoleWithId}
