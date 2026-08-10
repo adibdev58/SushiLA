@@ -11,12 +11,13 @@ export const createSession = () => {
     const secretKey = env.SECRET_SESSION_KEY;
     if(!secretKey) throw new CustomError(ErrorStatus.NotFoundInEnv, `Some important value is missing in .env-file!`, `SECRET_SESSION_KEY is missing in .env.`,500);
 
+    //Todo: Secure should be true (so the browser sends the cookie only encrypted to server) after the connection via https is configured. (For now let it be because of certificate headache)
     const sessionMiddleware = session({
         secret: secretKey,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 604800000, //7 days
+            maxAge: 604800000,
             httpOnly: true,
             secure: false
         },

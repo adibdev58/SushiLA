@@ -17,7 +17,7 @@ declare module 'express-session' {
         email: string;
         forename: string;
         lastname: string;
-        role: roles;
+        role: roles | string;
       }
     }
 }

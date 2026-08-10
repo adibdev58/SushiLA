@@ -31,7 +31,7 @@ router.post("/", async (req, res: ResponseObjectType<LoginPostResponseData>, nex
             email,
             forename,
             lastname,
-            role: roleName
+            role: roleName.toString()
         }
 
         req.session.UserData = userData;
@@ -40,7 +40,8 @@ router.post("/", async (req, res: ResponseObjectType<LoginPostResponseData>, nex
             email,
             forename,
             lastname,
-            id: userId
+            id: userId,
+            role_id: roleId
         }
         const customResponse = new CustomResponse(true, responseData)
         return res.json(customResponse)

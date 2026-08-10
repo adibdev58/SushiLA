@@ -17,6 +17,7 @@ router.get("/", (req, res)=> {
     )
 })
 
+//Todo: Test /admin route post role implementation
 //Todo: Refactor because of changes in DB-table of Products.
 router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponseData>, next:NextFunction)=> {
     try {
