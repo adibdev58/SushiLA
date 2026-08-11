@@ -60,7 +60,7 @@ async function queryUser(email: string):Promise<{
             const errorMessage = error.message;
             const errorDetails = error.details;
             const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError,`User not found!`, `Something went wrong with the DB query! User does not exist. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,404)
+            throw new CustomError(ErrorStatus.EmailNotRegistered,`User not found!`, `Make sure your email is registered. DB Error: ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,404)
         }
         
     return {data}

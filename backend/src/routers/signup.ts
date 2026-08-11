@@ -12,7 +12,7 @@ router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, nex
         const userIsAlreadyRegistered = await userExists(parsedData.email);
 
         if(userIsAlreadyRegistered){
-            throw new CustomError(ErrorStatus.userExistsAlready, `User is already registered!`,`The user's email is already saved in the database.`,400)
+            throw new CustomError(ErrorStatus.EmailIsAlreadyRegistered, `User is already registered!`,`The user's email is already saved in the database.`,400)
         }
         
         const defaultRoleId = await queryRoleId(roles.user);

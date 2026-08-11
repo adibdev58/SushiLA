@@ -1,6 +1,6 @@
 import express from "express"
 import {type Request, type NextFunction} from "express"
-import { CustomError ,ErrorStatus, ProductPostSchema, type ProductPost, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponseData } from '@sushila/shared';
+import { CustomError ,ErrorStatus, ProductPostReqSchema, type ProductDbInsert, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponse } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
 import {insert} from "../utils/db.js"
 import {isFromAdminEndpoint} from "../middleware/index.js";
@@ -19,13 +19,13 @@ router.get("/", (req, res)=> {
 
 //Todo: Test /admin route post role implementation
 //Todo: Refactor because of changes in DB-table of Products.
-router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponseData>, next:NextFunction)=> {
+router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponse>, next:NextFunction)=> {
     try {
-        const parsedBody: ProductPost = await validateZodScheme(ProductPostSchema,req.body);
+        const parsedBody: ProductDbInsert = await validateZodScheme(ProductPostReqSchema,req.body);
         const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
 
-        const responseData: ProductPostResponseData = parsedBody;
-        const response: CustomResponse<ProductPostResponseData> = new CustomResponse(true, responseData);
+        const responseData: ProductPostResponse = parsedBody;
+        const response: CustomResponse<ProductPostResponse> = new CustomResponse(true, responseData);
 
         res.status(201).json(response)
     } catch(err) {

@@ -7,13 +7,14 @@ export enum ErrorStatus {
     NoRessourceFound = "NoRessourceFound",
     LoginRequired = "LoginRequired",
     AlreadyLoggedIn = "AlreadyLoggedIn",
+    EmailNotRegistered = "EmailNotRegistered",
+    EmailIsAlreadyRegistered="EmailIsAlreadyRegistered",
     NotAuthorized = "NotAuthorized",
     InvalidCredentials = "InvalidCredentials",
     ServerError = "ServerError",
     DatabaseError = "DatabaseError",
     NotFoundInEnv = "NotFoundInEnv",
     ValidationError="ValidationError",
-    userExistsAlready="userExistsAlready",
     PasswordHashingError = "PasswordHashingError"
 }
 export class CustomError {
@@ -47,8 +48,9 @@ export class CustomResponse<T> {
 }
 export type ResponseObjectType<T> = Response<CustomResponse<T>>;
 //---------------------------------------------------------------------------
-export const ProductPostSchema = zod.object({
-    creator: zod.string().trim().min(1).max(99),
+
+//Todo: Improve naming espacially the endpoint types.
+export const ProductPostReqSchema = zod.object({
     name: zod.string().trim().min(1).max(99),
     imgUrls: zod.array(
     zod.object({url: zod.string().trim().min(1).max(1000) }),
@@ -73,8 +75,8 @@ export const ProductPostSchema = zod.object({
         }
     }
 );
-export type ProductPost = zod.infer<typeof ProductPostSchema>;
-export type ProductPostResponseData = ProductPost;
+export type ProductDbInsert = zod.infer<typeof ProductPostReqSchema>;
+export type ProductPostResponse = ProductDbInsert;
 //---------------------------------------------------------------------------
 
 export const CategorySchema = zod.object({
