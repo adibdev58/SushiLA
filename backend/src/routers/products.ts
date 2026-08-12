@@ -2,7 +2,7 @@ import express from "express"
 import {type Request, type NextFunction} from "express"
 import { CustomError ,ErrorStatus, ProductPostReqSchema, type ProductDbInsert, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponse } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
-import {insert} from "../utils/db.js"
+import {insertProduct} from "../utils/db.js"
 import {isFromAdminEndpoint} from "../middleware/index.js";
 
 const router = express.Router();
@@ -22,10 +22,9 @@ router.get("/", (req, res)=> {
 router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponse>, next:NextFunction)=> {
     try {
         const parsedBody: ProductDbInsert = await validateZodScheme(ProductPostReqSchema,req.body);
-        const insertionData = await insert(parsedBody, StoredProcedureName.insert_product_atomic);
+        const insertedData:ProductPostResponse = await insertProduct(parsedBody);
 
-        const responseData: ProductPostResponse = parsedBody;
-        const response: CustomResponse<ProductPostResponse> = new CustomResponse(true, responseData);
+        const response: CustomResponse<ProductPostResponse> = new CustomResponse(true, insertedData);
 
         res.status(201).json(response)
     } catch(err) {

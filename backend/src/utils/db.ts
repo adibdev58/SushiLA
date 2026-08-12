@@ -1,4 +1,4 @@
-import {type ProductPost, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName, roles} from "@sushila/shared"
+import {type ProductDbInsert, type ProductPostResponse, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName, roles} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
 
@@ -19,9 +19,9 @@ async function db() {
     } 
 }
 type SignupPostNoPassword = Omit<SignupPost,'password'>;
-type InsertResponseData= ProductPost | CategoryPost | SignupPostNoPassword;
+type InsertResponseData = ProductDbInsert | CategoryPost | SignupPostNoPassword;
 
-async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
+async function insert(dataToInsert: ProductDbInsert | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
     try {
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
@@ -45,6 +45,38 @@ async function insert(dataToInsert: ProductPost | CategoryPost | SignupPost, sto
         }
     }
 }
+
+//Main function for inserting in DB. Other insertion functions just use/extend this.
+async function executeInsertion<T>(dataToInsert: Record<string,unknown>, storedProcedureName: StoredProcedureName, errorShort: string):Promise<T> {
+    try {
+        const database = await db();
+        const data_keysToLowerCase = lowercaseKeys(dataToInsert);
+        const {data, error, status} = await database.rpc(storedProcedureName, 
+            data_keysToLowerCase
+        );
+
+        if(error) {
+            const errorMessage = error.message;
+            const errorDetails = error.details;
+            const errorCause = error.cause;
+            throw new CustomError(ErrorStatus.DatabaseError, errorShort,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
+        }
+
+    return data
+    } catch(err) {
+        if(err instanceof CustomError) {
+            throw err;
+        } else {
+            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,`Unexpected error during database insert operation! Raw error: ${err}`,500)
+        }
+    }
+}
+
+async function insertProduct(product:ProductDbInsert):Promise<ProductPostResponse> {
+    const insertionResponse = await executeInsertion<ProductPostResponse>(product, StoredProcedureName.insert_product_atomic, `Failed to insert the new product.`);
+    return insertionResponse
+}
+
 
 async function queryUser(email: string):Promise<{
     data: UserQueryData
@@ -120,4 +152,4 @@ async function queryRoleWithId(roleId: number): Promise<string> {
 
     return roleName
 }
-export {insert,queryUser,userExists,queryRoleId,queryRoleWithId}
+export {insert,insertProduct,queryUser,userExists,queryRoleId,queryRoleWithId}
