@@ -1,6 +1,6 @@
 import express from "express"
 import {type Request, type NextFunction} from "express"
-import { CustomError ,ErrorStatus, ProductPostReqSchema, type ProductDbInsert, StoredProcedureName, CustomResponse, type ResponseObjectType, type ProductPostResponse } from '@sushila/shared';
+import { CustomError ,ErrorStatus, ProductPostReqSchema, type ProductDbInsert, CustomResponse, type ResponseObjectType, type ProductPostResponse, getTimeStampNowUtcIso } from '@sushila/shared';
 import { validateZodScheme } from '../utils/validateZodScheme.js';
 import {insertProduct} from "../utils/db.js"
 import {isFromAdminEndpoint} from "../middleware/index.js";
@@ -17,12 +17,22 @@ router.get("/", (req, res)=> {
     )
 })
 
-//Todo: Test /admin route post role implementation
-//Todo: Refactor because of changes in DB-table of Products.
+//completed
 router.post("/", isFromAdminEndpoint, async (req:Request, res: ResponseObjectType<ProductPostResponse>, next:NextFunction)=> {
     try {
-        const parsedBody: ProductDbInsert = await validateZodScheme(ProductPostReqSchema,req.body);
-        const insertedData:ProductPostResponse = await insertProduct(parsedBody);
+        const currentUserMail = req.session.UserData?.email;
+        if(!currentUserMail) {
+            throw new CustomError(ErrorStatus.ServerError, `Something went wrong! Please log out and try again.`, ` There is something wrong with the session/cookie data. The email could not be found in the session data.`,500)
+        }
+        const parsedData = await validateZodScheme(ProductPostReqSchema,req.body);
+        const dataToInsert: ProductDbInsert = {
+            ...parsedData, 
+            creationDate: getTimeStampNowUtcIso(),
+            creator: currentUserMail,
+            lastUser: currentUserMail,
+            lastUpdateDate: getTimeStampNowUtcIso()};
+
+        const insertedData:ProductPostResponse = await insertProduct(dataToInsert);
 
         const response: CustomResponse<ProductPostResponse> = new CustomResponse(true, insertedData);
 

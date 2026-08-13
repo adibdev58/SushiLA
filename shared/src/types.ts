@@ -75,7 +75,7 @@ export const ProductPostReqSchema = zod.object({
         }
     }
 );
-export type ProductDbInsert = zod.infer<typeof ProductPostReqSchema>;
+export type ProductDbInsert = zod.infer<typeof ProductPostReqSchema> & {lastUpdateDate: string, creator: string, lastUser: string};
 export type ProductPostResponse = ProductDbInsert;
 //---------------------------------------------------------------------------
 

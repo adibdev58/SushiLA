@@ -46,6 +46,8 @@ async function insert(dataToInsert: ProductDbInsert | CategoryPost | SignupPost,
     }
 }
 
+
+//Todo: Create other individual inserting functions which insert/does only one thing! insert-function should be eventually deleted!
 //Main function for inserting in DB. Other insertion functions just use/extend this.
 async function executeInsertion<T>(dataToInsert: Record<string,unknown>, storedProcedureName: StoredProcedureName, errorShort: string):Promise<T> {
     try {
@@ -72,11 +74,11 @@ async function executeInsertion<T>(dataToInsert: Record<string,unknown>, storedP
     }
 }
 
+//Todo: The timestamps in the database are not saved with their time zone differences.
 async function insertProduct(product:ProductDbInsert):Promise<ProductPostResponse> {
     const insertionResponse = await executeInsertion<ProductPostResponse>(product, StoredProcedureName.insert_product_atomic, `Failed to insert the new product.`);
     return insertionResponse
 }
-
 
 async function queryUser(email: string):Promise<{
     data: UserQueryData
