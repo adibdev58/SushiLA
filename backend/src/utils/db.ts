@@ -1,4 +1,4 @@
-import {type ProductDbInsert, type ProductPostResponse, type CategoryPost, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName, roles} from "@sushila/shared"
+import {type ProductDbInsert, type ProductPostResponse, type CategoryPostResponse, type SignupPost, type UserQueryData, CustomError, ErrorStatus, StoredProcedureName, roles} from "@sushila/shared"
 import {createClient} from "@supabase/supabase-js"
 import lowercaseKeys from "lowercase-keys"
 
@@ -19,9 +19,9 @@ async function db() {
     } 
 }
 type SignupPostNoPassword = Omit<SignupPost,'password'>;
-type InsertResponseData = ProductDbInsert | CategoryPost | SignupPostNoPassword;
+type InsertResponseData = ProductDbInsert | CategoryPostResponse | SignupPostNoPassword;
 
-async function insert(dataToInsert: ProductDbInsert | CategoryPost | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
+async function insert(dataToInsert: ProductDbInsert | CategoryPostResponse | SignupPost, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
     try {
         const database = await db();
         const data_keysToLowerCase = lowercaseKeys(dataToInsert);
@@ -77,6 +77,12 @@ async function executeInsertion<T>(dataToInsert: Record<string,unknown>, storedP
 //Todo: The timestamps in the database are not saved with their time zone differences.
 async function insertProduct(product:ProductDbInsert):Promise<ProductPostResponse> {
     const insertionResponse = await executeInsertion<ProductPostResponse>(product, StoredProcedureName.insert_product_atomic, `Failed to insert the new product.`);
+    return insertionResponse
+}
+
+//Todo: The post or insertion operations must return an id of the new ressource which is created. Start with category. Update the API schema in Notepad++.
+async function insertCategory(category:CategoryPostResponse):Promise<CategoryPostResponse> {
+    const insertionResponse = await executeInsertion<CategoryPostResponse>(category, StoredProcedureName.insert_category, `Failed to insert the new category.`);
     return insertionResponse
 }
 
@@ -154,4 +160,4 @@ async function queryRoleWithId(roleId: number): Promise<string> {
 
     return roleName
 }
-export {insert,insertProduct,queryUser,userExists,queryRoleId,queryRoleWithId}
+export {insert,insertProduct,insertCategory,queryUser,userExists,queryRoleId,queryRoleWithId}

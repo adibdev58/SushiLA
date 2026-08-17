@@ -1,7 +1,7 @@
 import {Router} from "express"
 import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName, roles} from "@sushila/shared"
 import { validateZodScheme } from "../utils/validateZodScheme.js";
-import { insert, queryRoleId,userExists } from "../utils/db.js";
+import {queryRoleId,userExists } from "../utils/db.js";
 
 const router = Router();
 
@@ -19,7 +19,7 @@ router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, nex
 
         const dataToInsert:SignupPost = {...parsedData,roleId: defaultRoleId};
 
-        const result = await insert(dataToInsert,StoredProcedureName.insert_user);
+       // const result = await insert(dataToInsert,StoredProcedureName.insert_user);
         
         const responseData:SignupPostResponseData = {
             email: dataToInsert.email,

@@ -1,19 +1,18 @@
 import {Router} from "express"
 import {type Request, type NextFunction} from "express"
-import {CustomError ,ErrorStatus, CustomResponse ,type ResponseObjectType ,CategorySchema, type CategoryPost, type CategoryPostResponseData, StoredProcedureName } from '@sushila/shared';
-import {insert} from "../utils/db.js"
+import {CustomError ,ErrorStatus, CustomResponse ,type ResponseObjectType ,CategoryPostReqSchema, type CategoryDbInsert, type CategoryPostResponse } from '@sushila/shared';
+import {insertCategory} from "../utils/db.js"
 import { isFromAdminEndpoint } from "../middleware/isFromAdminEndpoint.js";
 
 const router = Router();
 
 //Completed
-router.post("/" ,isFromAdminEndpoint ,async(req:Request,res:ResponseObjectType<CategoryPostResponseData> ,next:NextFunction)=> {
+router.post("/" ,isFromAdminEndpoint ,async(req:Request,res:ResponseObjectType<CategoryPostResponse> ,next:NextFunction)=> {
     try { 
-        const parsedBody: CategoryPost = CategorySchema.parse(req.body);
-        const result = await insert(parsedBody, StoredProcedureName.insert_category);
-
-        const responseData: CategoryPostResponseData = parsedBody;
-        const response:CustomResponse<CategoryPostResponseData> = new CustomResponse(true, responseData);
+        const parsedBody: CategoryDbInsert = CategoryPostReqSchema.parse(req.body);
+        const responseData: CategoryPostResponse = await insertCategory(parsedBody);
+      
+        const response:CustomResponse<CategoryPostResponse> = new CustomResponse(true, responseData);
         res.status(201).json(response);
     } catch(err) {
         if( err instanceof CustomError) {

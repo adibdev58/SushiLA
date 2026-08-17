@@ -79,11 +79,11 @@ export type ProductDbInsert = zod.infer<typeof ProductPostReqSchema> & {lastUpda
 export type ProductPostResponse = ProductDbInsert;
 //---------------------------------------------------------------------------
 
-export const CategorySchema = zod.object({
+export const CategoryPostReqSchema = zod.object({
     name: zod.string().trim().min(1).max(99)
 });
-export type CategoryPost = zod.infer<typeof CategorySchema>;
-export type CategoryPostResponseData = CategoryPost;
+export type CategoryDbInsert = zod.infer<typeof CategoryPostReqSchema>;
+export type CategoryPostResponse = CategoryDbInsert;
 //---------------------------------------------------------------------------
 export const SignupPostSchema = zod.object({
     forename: zod.string().trim().min(1).max(99).toLowerCase(),
