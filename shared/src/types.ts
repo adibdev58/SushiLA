@@ -76,14 +76,20 @@ export const ProductPostReqSchema = zod.object({
     }
 );
 export type ProductDbInsert = zod.infer<typeof ProductPostReqSchema> & {lastUpdateDate: string, creator: string, lastUser: string};
-export type ProductPostResponse = ProductDbInsert;
+export type ProductPostResponse = 
+    {
+        id: number
+    } & ProductDbInsert;
 //---------------------------------------------------------------------------
 
 export const CategoryPostReqSchema = zod.object({
     name: zod.string().trim().min(1).max(99)
 });
 export type CategoryDbInsert = zod.infer<typeof CategoryPostReqSchema>;
-export type CategoryPostResponse = CategoryDbInsert;
+export type CategoryPostResponse = 
+    {
+        id: number
+    } & CategoryDbInsert;
 //---------------------------------------------------------------------------
 export const SignupPostSchema = zod.object({
     forename: zod.string().trim().min(1).max(99).toLowerCase(),
