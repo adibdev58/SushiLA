@@ -81,6 +81,7 @@ async function insertProduct(product:ProductDbInsert):Promise<ProductPostRespons
 }
 
 //Todo: The post or insertion operations must return an id of the new ressource which is created. Start with category. Update the API schema in Notepad++.
+//Todo: Refactor the DB function insert_product_atomic. It looks horrible/unreadable. 
 async function insertCategory(category:CategoryPostResponse):Promise<CategoryPostResponse> {
     const insertionResponse = await executeInsertion<CategoryPostResponse>(category, StoredProcedureName.insert_category, `Failed to insert the new category.`);
     return insertionResponse
