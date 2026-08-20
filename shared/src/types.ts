@@ -91,7 +91,7 @@ export type CategoryPostResponse =
         id: number
     } & CategoryDbInsert;
 //---------------------------------------------------------------------------
-export const SignupPostSchema = zod.object({
+export const SignupPostReqSchema = zod.object({
     forename: zod.string().trim().min(1).max(99).toLowerCase(),
     lastname: zod.string().trim().min(1).max(99).toLowerCase(),
     email: zod.email().trim().min(1).max(99).toLowerCase(),
@@ -111,8 +111,12 @@ export const SignupPostSchema = zod.object({
         return await hash(pass);
     })
 })
-export type SignupPost = zod.infer<typeof SignupPostSchema> & {roleId: number};
-export type SignupPostResponseData = Omit<SignupPost , 'password'>;
+export type SignupDbInsert = zod.infer<typeof SignupPostReqSchema> & {roleId: number};
+export type SignupPostResponse = 
+    {
+        id: number
+    }
+    & Omit<SignupDbInsert , 'password'>;
 //---------------------------------------------------------------------------
 export const LoginPostSchema = zod.object({
     email: zod.email().trim().toLowerCase(),

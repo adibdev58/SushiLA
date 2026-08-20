@@ -1,14 +1,14 @@
 import {Router} from "express"
-import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostSchema, type SignupPost, type SignupPostResponseData, StoredProcedureName, roles} from "@sushila/shared"
-import { validateZodScheme } from "../utils/validateZodScheme.js";
-import {queryRoleId,userExists } from "../utils/db.js";
+import {CustomResponse, type ResponseObjectType, CustomError, ErrorStatus, SignupPostReqSchema, type SignupDbInsert, type SignupPostResponse, StoredProcedureName, roles} from "@sushila/shared"
+import {validateZodScheme } from "../utils/validateZodScheme.js";
+import {insertUser, queryRoleId,userExists } from "../utils/db.js";
 
 const router = Router();
 
 //completed
-router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, next) => {
+router.post("/", async (req, res:ResponseObjectType<SignupPostResponse>, next) => {
     try {
-        const parsedData: Omit<SignupPost,'roleId'> = await validateZodScheme(SignupPostSchema,req.body);
+        const parsedData = await validateZodScheme(SignupPostReqSchema,req.body);
         const userIsAlreadyRegistered = await userExists(parsedData.email);
 
         if(userIsAlreadyRegistered){
@@ -17,17 +17,15 @@ router.post("/", async (req, res:ResponseObjectType<SignupPostResponseData>, nex
         
         const defaultRoleId = await queryRoleId(roles.user);
 
-        const dataToInsert:SignupPost = {...parsedData,roleId: defaultRoleId};
+        const dataToInsert:SignupDbInsert = 
+        {
+            ...parsedData,
+            roleId: defaultRoleId
+        };
 
-       // const result = await insert(dataToInsert,StoredProcedureName.insert_user);
-        
-        const responseData:SignupPostResponseData = {
-            email: dataToInsert.email,
-            forename: dataToInsert.forename,
-            lastname: dataToInsert.lastname,
-            roleId: dataToInsert.roleId
-        }
-        const responseObject:CustomResponse<SignupPostResponseData> = new CustomResponse(true, responseData);
+        const result:SignupPostResponse = await insertUser(dataToInsert);
+
+        const responseObject:CustomResponse<SignupPostResponse> = new CustomResponse(true, result);
         res.status(201).json(responseObject);
         
     } catch (err) {

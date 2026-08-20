@@ -5,7 +5,7 @@ import {ProductPostReqSchema,type ProductDbInsert, type ProductPostResponse} fro
 import {CategoryPostReqSchema,type CategoryDbInsert, type CategoryPostResponse} from "./types.js";
 import {getTimeStampNowUtcIso} from "./getTimeStampNowUtcIso.js";
 import {StoredProcedureName, type UserQueryData} from "./types.js";
-import {SignupPostSchema, type SignupPost, type SignupPostResponseData} from "./types.js";
+import {SignupPostReqSchema, type SignupDbInsert, type SignupPostResponse} from "./types.js";
 import {LoginPostSchema, type LoginPostResponseData}  from "./types.js";
 import {roles} from "./types.js";
 import {hash} from "./hash.js";
@@ -16,7 +16,7 @@ export {ProductPostReqSchema,type ProductDbInsert, type ProductPostResponse}
 export {CategoryPostReqSchema,type CategoryDbInsert, type CategoryPostResponse}
 export {getTimeStampNowUtcIso}
 export {StoredProcedureName, type UserQueryData}
-export {SignupPostSchema, type SignupPost, type SignupPostResponseData}
+export {SignupPostReqSchema, type SignupDbInsert, type SignupPostResponse}
 export {LoginPostSchema, type LoginPostResponseData}
 export {roles}
 export {hash}
