@@ -18,35 +18,8 @@ async function db() {
         throw new CustomError(ErrorStatus.DatabaseError, `Invalid environment variables in .env.`,`Failed to connect to the database. Please verify PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY variables in the .env file. ${JSON.stringify(err)}`,500)
     } 
 }
-type InsertResponseData = ProductDbInsert | CategoryPostResponse | SignupPostResponse;
 
-async function insert(dataToInsert: ProductDbInsert | CategoryPostResponse | SignupDbInsert, storedProcedureName: StoredProcedureName):Promise<InsertResponseData> {
-    try {
-        const database = await db();
-        const data_keysToLowerCase = lowercaseKeys(dataToInsert);
-        const {data, error, status} = await database.rpc(storedProcedureName, 
-            data_keysToLowerCase
-        );
-
-        if(error) {
-            const errorMessage = error.message;
-            const errorDetails = error.details;
-            const errorCause = error.cause;
-            throw new CustomError(ErrorStatus.DatabaseError, `DB Insert Error`,`Something went wrong while inserting into the database! Check the ${storedProcedureName} function in the DB. ${errorMessage ?? ""} ${errorDetails ?? ""} ${errorCause ?? ""}`,500)
-        }
-
-    return data
-    } catch(err) {
-        if(err instanceof CustomError) {
-            throw err;
-        } else {
-            throw new CustomError(ErrorStatus.DatabaseError,`Something went wrong with DB!`,`Unexpected error during database insert operation! Raw error: ${err}`,500)
-        }
-    }
-}
-
-
-//Todo: Create other individual inserting functions which insert/does only one thing! insert-function should be eventually deleted!
+//Done: Create other individual inserting functions which insert/does only one thing! insert-function should be eventually deleted!
 //Main function for inserting in DB. Other insertion functions just use/extend this.
 async function executeInsertion<T>(dataToInsert: Record<string,unknown>, storedProcedureName: StoredProcedureName, errorShort: string):Promise<T> {
     try {
@@ -85,7 +58,9 @@ async function insertCategory(category:CategoryDbInsert):Promise<CategoryPostRes
     const insertionResponse = await executeInsertion<CategoryPostResponse>(category, StoredProcedureName.insert_category, `Failed to insert the new category.`);
     return insertionResponse
 }
- 
+
+
+//Todo: every insertX function should return an id!g
 async function insertUser(user:SignupDbInsert):Promise<SignupPostResponse> {
     const insertionResponse = await executeInsertion<SignupPostResponse>(user, StoredProcedureName.insert_user, `Failed to insert the new user.`);
     return insertionResponse
